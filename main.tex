@@ -17,6 +17,8 @@
 \usepackage{microtype}
 \usepackage{enumitem}
 \usepackage{cleveref}
+\usepackage{float}        % enables [H] placement specifier
+\usepackage{placeins}     % provides \FloatBarrier
 \sloppy
 \graphicspath{{figures/}{./}}
 
@@ -32,47 +34,31 @@
 
 \title{Whole Field Methods for Fringe Order Demodulation Using Machine Learning Approach in Digital Photoelasticity}
 
-\author[inst1]{[Author Name(s)]\corref{cor1}}
-\cortext[cor1]{Corresponding author}
-\ead{author@institution.edu}
+\author[inst1]{Thejus Krishna KS}
+\author[inst1]{Anandu Vinod}
+\author[inst2]{Hariprasad M.P\corref{cor1}}
 
-\affiliation[inst1]{organization={Department of Mechanical Engineering, Institution Name},
-             city={City},
-             country={Country}}
+\cortext[cor1]{Corresponding author}
+\ead{hariprasadmp@am.amrita.edu}
+
+\affiliation[inst1]{organization={Department of Mechanical Engineering,
+             Amrita Vishwa Vidyapeetham},
+             city={Amritapuri},
+             country={India}}
+
+\affiliation[inst2]{organization={Centre for Flexible Electronics and
+             Advanced Materials, Amrita Vishwa Vidyapeetham},
+             city={Amritapuri},
+             country={India}}
 
 \begin{abstract}
-Digital photoelasticity is a hi well-established full-field optical technique
-for experimental stress analysis of engineering components. The reliable
-determination of the isochromatic fringe order $N$ across the entire field
-of view---whole-field fringe order demodulation---remains a central
-challenge, particularly under variable illumination and for complex specimen
-geometries. Classical approaches including RGB three-fringe photoelasticity
-\cite{ajovalasit1995,ramesh1996}, multi-step phase-shifting
-\cite{wang1995,siegmann2005}, and Fourier-transform-based methods
-\cite{quan1993} each impose constraints on experimental setup, fringe
-density, or number of image acquisitions. Recent deep learning approaches
-have demonstrated promising results \cite{tao2022,naranjo2022,mohan2024}
-but are parameter-intensive and require large labelled training sets.
 
-This paper proposes a whole-field, single-image fringe order demodulation
-framework based on extreme gradient-boosted decision trees (XGBoost)
-\cite{chen2016}. At inference the method requires only a single RGB
-isochromatic image and predicts the fractional fringe order $\hat{N}$ at
-every pixel; no knowledge of applied load, specimen geometry, or material
-constants is used. A dual-model architecture predicts the sine and cosine
-of $2\pi N$ independently, eliminating the circular discontinuity at integer
-fringe orders, with the fractional fringe order recovered via
-$\mathrm{arctan2}$. Models are trained on a large combined dataset of
-physics-simulated synthetic fringe images rendered for three specimen
-geometries across ten spectral conditions, together with geometrically
-augmented real experimental images. Each pixel is described by a
-27-dimensional feature vector encoding colour, neighbourhood statistics,
-gradient, Laplacian, and multi-scale Gabor filter responses. GPU-accelerated
-training ingests a ${>}70$~GB dataset in memory-efficient chunks.
-Experimental validation on unseen ring and disc specimens demonstrates
-RMSE~$= 0.1112$ fringe orders on the synthetic test set ($R^2 = 0.8485$).
-The method is calibration-free, illumination-robust, and deployable across
-arbitrary specimen geometries without retraining.
+Extracting continuous isochromatic fringe orders from complex photoelastic fields is a persistent problem in experimental mechanics, when faced with variables like differing Spectral Power Distributions, varying camera sensitivities and irregular specimen geometries these problems are more apparent. Traditional phase-shifting techniques and recent neural networks have advanced the field considerably and yet they are often held back by strict optical setup requirements, error-prone phase unwrapping algorithms or massive computational overhead. 
+
+To address this gap, this project bring a computationally efficient, single-image demodulation framework that is powered by Extreme Gradient (XGBoost). This proposed methodology is strictly \emph{image driven}: utilizing a single RGB image at the inference, this model predicts the fractional fringe order $\hat{N}$  at a pixel level without requiring previous knowledge of applied loads, specimen geometry or material constants. The proposed architecture mitigates integer order discontinuities by splitting the fringe field into independent sine and cosine predictions of $2\pi N$ using $\mathrm{arctan2}$ reconstruction. this dual model strategy successfully maps periodic fringe data onto continuous coordinates  and eliminate artifacts that are common in direct order estimation.
+
+The model,trained on a  ${>}70$~GB memory chunked dataset which contains physics-simulated fringe patterns (representing analytical Kirsch, Timoshenko, and Euler-Bernoulli solutions rendered through five distinct illuminant SPDs and two camera sensor models) and geometrically augmented data from seven real specimen categories. Each pixel is characterized by a 27-dimensional feature vector that captures local colour statistics, HSV representations, bi-lateral and mean filter context, spatial Sobel gradients, Laplacians and dual-scale Gabor Filter responses. A fringe-order balance sampling strategy that divides the 0 to 1 fractional range into 10 equal bins with a ceiling of 2,000 samples per bin per image was employed to prevent dominance of low-order fringes during the training. Experimental validation shows a strong predictive accuracy on unseen test geometries, showing significant resilience to lighting gradients and camera sensor variation. This XGBoost framework provides a calibration-free, illumination independant tool that can be deployed across arbitrary geometries without retraining leading way to rapid industrial stress analysis. 
+
 \end{abstract}
 
 \begin{keyword}
@@ -148,13 +134,14 @@ Section~\ref{sec:results} presents quantitative results. Section~\ref{sec:discus
 discusses findings, limitations, and comparisons. Section~\ref{sec:conclusion}
 concludes.
 
+\FloatBarrier
 % ===========================================================
 \section{Related Work}
 \label{sec:related}
 
 \subsection{Classical Fringe Order Demodulation}
 
-Automated fringe order demodulation in photoelasticity has a history spanning over three decades. Ajovalasit, Barone, and Petrucci \cite{ajovalasit1995} started RGB photoelasticity. They matched one white-light isochromatic image to a color calibration look-up table (LUT). This helped them determine the retardation. Ramesh and Deshmukh \cite{ramesh1996} made three-fringe photoelasticity (TFP). Later, their team added new strategies. These are advancing-front \cite{kale2013} and fringe-resolution-guided \cite{ramesh2015}. They help improve reliable demodulation for higher fringe orders. Ajovalasit, Petrucci, and Scafidi \cite{ajovalasit2015} provide a comprehensive review of RGB photoelasticity. Ramesh et al.\ \cite{ramesh2011} and Madhu and Ramesh \cite{madhu2007} looked into issues with nonuniqueness and color adaptation under various light sources. The software packages PSCOPE\textsuperscript{\textregistered} and DigiTFP\textsuperscript{\textregistered} from IIT Madras combine proven TFP algorithms into one platform \cite{ramesh2015pscope,ramesh2015digitfp}.
+Automated fringe order demodulation in photoelasticity has a history spanning over three decades. Ajovalasit, Barone, and Petrucci \cite{ajovalasit1995} started RGB photoelasticity. They matched one white-light isochromatic image to a color calibration look-up table (LUT). This helped them determine the retardation. Ramesh and Deshmukh \cite{ramesh1996} made three-fringe photoelasticity (TFP). Later, their team added new strategies. These are advancing-front \cite{kale2013} and fringe-resolution-guided \cite{ramesh2015}. They help improve reliable demodulation for higher fringe orders. Ajovalasit, Petrucci, and Scafidi \cite{ajovalasit2015} provide a comprehensive review of RGB photoelasticity. Ramesh et al.\ \cite{ramesh2011} and Madhu and Ramesh \cite{madhu2007} looked into issues with nonuniqueness and color adaptation under various light sources. The software packages PSCOPE\textsuperscript{\textregistered} and DigiTFP\textsuperscript{\textregistered} from IIT Madras combine proven TFP algorithms into one platform.
 
 Phase-shifting methods offer better accuracy, but they require more acquisitions and extra hardware. Wang and Patterson \cite{wang1995} combined phase-stepping with fuzzy-set processing. Ramesh and Ganapathy \cite{ramesh1996phaseshifting} formalized the methodology using Jones calculus. Siegmann, Backman, and Patterson \cite{siegmann2005} showed a strong method. It focuses on regions to handle complex fringe patterns. This is useful for aerospace samples. Ramji and Ramesh \cite{ramji2010} created an adaptive algorithm. It guides quality in unwrapping isoclinic and isochromatic phasemaps. Phase ambiguity and unwrapping for isochromatic maps are treated in \cite{ramesh2004,ramji2008}.
 
@@ -172,6 +159,7 @@ Beyond photoelasticity, gradient-boosted methods have achieved state-of-the-art 
 
 Dataset scarcity is the principal bottleneck for supervised learning in photoelasticity \cite{brinezdeleon2024}. Physics-based simulation provides a principled route to large annotated datasets. The Isochromatic-Art dataset \cite{mohan2024} has over 100,000 synthetic isochromatic image pairs. This is great for researchers. This work builds on earlier studies by altering the specimen shape and lighting setup. We look at three analytical solutions. For each shape-load pair, there are ten conditions. We use five illuminants and two sensor profiles. This creates a training distribution with a wider variety of lighting. Data augmentation using geometric transforms is common in computer vision \cite{shorten2019}. However, in photoelasticity, there is an important extra rule. The BMP image and its ground-truth FRN map must get the same spatial transform. This keeps the pixel-to-fringe-order correspondence intact. Such a rule is not needed in standard image classification tasks.
 
+\FloatBarrier
 % ===========================================================
 \section{Methodology}
 \label{sec:methodology}
@@ -186,9 +174,9 @@ operates exclusively on pixel-level RGB data and its derived features. The
 trained model therefore has no dependence on load, specimen geometry, or
 material constants at inference time.
 
-\begin{figure}[htbp]
+\begin{figure}[H]
   \centering
-  \includegraphics[width=0.96\linewidth]{Fig1_pipeline}
+  \includegraphics[width=0.96\linewidth]{Photoelasticity}
   \caption{Overview of the proposed whole-field fringe order demodulation
     pipeline. Synthetic and augmented real image pairs are processed into a
     unified pixel level dataset, which trains dual XGBoost regressors.
@@ -249,9 +237,9 @@ outputs $\hat{N}$ directly.
 \subsection{Synthetic Dataset Generation}
 \label{sec:synthetic}
 
-
-A large physics-based synthetic dataset was created. It used closed-form analytical stress solutions for three specimen shapes. This was done in\texttt{generate\_dataset.py}. Applied loads in this stage control the fringe density of the image. A higher load means denser fringes and a broader range of N values. Their main job is to fill the training distribution with images. These images should cover a wide variety of fringe densities and color combinations. This approach follows the synthetic-data strategy established i n\cite{mohan2024,brinezdeleon2024}. For each geometry-spectral combo, we create two files. One is an 8-bit RGB BMP image. It measures ($602 \times 461$ pixels,
+A large physics-based synthetic dataset was created. It used closed-form analytical stress solutions for three specimen shapes. This was done in \texttt{generate\_dataset.py}. Applied loads in this stage control the fringe density of the image. A higher load means denser fringes and a broader range of N values. Their main job is to fill the training distribution with images. These images should cover a wide variety of fringe densities and color combinations. This approach follows the synthetic-data strategy established in \cite{mohan2024,brinezdeleon2024}. For each geometry-spectral combo, we create two files. One is an 8-bit RGB BMP image. It measures ($602 \times 461$ pixels,
 0.5~mm/pixel). The other file is a tab-separated fringe-order ground-truth map (\texttt{.frn}).
+
 \subsubsection{Specimen geometries}
 
 \paragraph{Beam under pure bending.}
@@ -300,9 +288,63 @@ parameters.
 \subsubsection{Spectral conditions}
 \label{sec:spectral}
 
-Each geometry is shown under  $N_\mathrm{spec} = 10$ spectral conditions. This includes five illuminant SPDs and two RGB sensor sensitivities (Table~\ref{tab:spectral}). The spectral axis spans $\lambda \in [390, 760]$~nm  at 371 uniformly spaced wavelength steps. The spectral integration ofEq. ~\eqref{eq:camera} is calculated numerically. We use the trapezoidal rule with CuPy/CUDA for GPU array operations. If needed, we fall back to NumPy. The resulting RGB image is per-channel min-max normalised to $[0,255]$ and saved as an 8-bit BMP. The ground-truth fringe-order map is stored as a single-precision float32 .frn file. Rendering under ten spectral conditions mixes up the training data from any one illuminant-sensor pair. This makes the model strong against changes in lighting\cite{ajovalasit2015,madhu2007b}.
+Each geometry is shown under $N_\mathrm{spec} = 10$ spectral conditions. This includes five illuminant SPDs and two RGB sensor sensitivities (Table~\ref{tab:spectral}). The spectral axis spans $\lambda \in [390, 760]$~nm at 371 uniformly spaced wavelength steps. The spectral integration of Eq.~\eqref{eq:camera} is calculated numerically. We use the trapezoidal rule with CuPy/CUDA for GPU array operations. If needed, we fall back to NumPy. The resulting RGB image is per-channel min-max normalised to $[0,255]$ and saved as an 8-bit BMP. The ground-truth fringe-order map is stored as a single-precision float32 .frn file. Rendering under ten spectral conditions mixes up the training data from any one illuminant-sensor pair. This makes the model strong against changes in lighting \cite{ajovalasit2015,madhu2007b}.
+Representative sensor spectral sensitivities and illuminant spectral power distributions are shown in Fig.~\ref{fig:spectral_curves}.
 
-\begin{table}[htbp]
+\begin{figure}[H]
+  \centering
+
+  % --- Sensors (top row) ---
+  \begin{subfigure}[t]{0.32\linewidth}
+    \centering
+    \includegraphics[width=\linewidth]{sensor_imx}
+    \caption{IMX series CMOS}
+  \end{subfigure}\hfill
+  \begin{subfigure}[t]{0.32\linewidth}
+    \centering
+    \includegraphics[width=\linewidth]{sensor_iphone8}
+    \caption{iPhone 8}
+  \end{subfigure}\hfill
+  \begin{subfigure}[t]{0.32\linewidth}
+    \centering
+    \includegraphics[width=\linewidth]{sensor_gaussian}
+    \caption{Idealised Gaussian}
+  \end{subfigure}
+
+  \vspace{6pt}
+
+  % --- Sources (bottom row) ---
+  \begin{subfigure}[t]{0.18\linewidth}
+    \centering
+    \includegraphics[width=\linewidth]{source_white}
+    \caption{White LED}
+  \end{subfigure}\hfill
+  \begin{subfigure}[t]{0.18\linewidth}
+    \centering
+    \includegraphics[width=\linewidth]{source_fluorescent}
+    \caption{Fluorescent}
+  \end{subfigure}\hfill
+  \begin{subfigure}[t]{0.18\linewidth}
+    \centering
+    \includegraphics[width=\linewidth]{source_incandescent}
+    \caption{Incandescent}
+  \end{subfigure}\hfill
+  \begin{subfigure}[t]{0.18\linewidth}
+    \centering
+    \includegraphics[width=\linewidth]{source_multipeak_gaussian}
+    \caption{Multi-peak Gaussian}
+  \end{subfigure}\hfill
+  \begin{subfigure}[t]{0.18\linewidth}
+    \centering
+    \includegraphics[width=\linewidth]{source_green_led}
+    \caption{Green LED}
+  \end{subfigure}
+
+  \caption{Spectral sensitivity curves of the RGB camera sensors (top row) and relative spectral power distributions of the illuminant sources (bottom row) used for synthetic data generation. All curves are normalised to unit peak intensity.}
+  \label{fig:spectral_curves}
+\end{figure}
+
+\begin{table}[H]
   \centering
   \caption{Spectral conditions used for synthetic image generation
     (5 illuminants $\times$ 2 sensors $= 10$ conditions per geometry).}
@@ -337,7 +379,7 @@ Each geometry is shown under  $N_\mathrm{spec} = 10$ spectral conditions. This i
   \end{tabular}
 \end{table}
 
-\begin{table}[htbp]
+\begin{table}[H]
   \centering
   \caption{Synthetic dataset dimensions by geometry.}
   \label{tab:dataset_dims}
@@ -358,7 +400,7 @@ Each geometry is shown under  $N_\mathrm{spec} = 10$ spectral conditions. This i
   \end{tabular}
 \end{table}
 
-\begin{figure}[htbp]
+\begin{figure}[H]
   \centering
   \includegraphics[width=0.96\linewidth]{Fig2_synthetic_grid}
   \caption{Representative synthetic isochromatic fringe images and their
@@ -371,15 +413,17 @@ Each geometry is shown under  $N_\mathrm{spec} = 10$ spectral conditions. This i
   \label{fig:synthetic_grid}
 \end{figure}
 
+\FloatBarrier
 \subsection{Real Image Augmentation}
 \label{sec:augmentation}
 
-Real fringe images were captured using a white-light transmission circular polariscope (Section~\ref{sec:experiment}). Each image is paired with a ground-truth .frn map obtained by phase-stepping. The augmentation pipeline (augmentation.py) creates 25 new BMP–FRN pairs for each original. 
+Real fringe images were captured using a white-light transmission circular polariscope (Section~\ref{sec:experiment}). Each image is paired with a ground-truth .frn map obtained by phase-stepping. The augmentation pipeline (augmentation.py) creates 25 new BMP--FRN pairs for each original.
 
-It does this by randomly using three spatial transforms: isotropic scaling, biaxial shearing, and random cropping  (Table~\ref{tab:augmentation}).
+It does this by randomly using three spatial transforms: isotropic scaling, biaxial shearing, and random cropping (Table~\ref{tab:augmentation}).
 
-The main point is that the same AffineTransform object (skimage.transform) uses bilinear interpolation. This applies to both the BMP and the linked FRN. This keeps the pixel-to-fringe-order match exact. No color transforms are used. Color is the main carrier of fringe-order information  \cite{ajovalasit2015,shorten2019}.
-\begin{table}[htbp]
+The main point is that the same AffineTransform object (skimage.transform) uses bilinear interpolation. This applies to both the BMP and the linked FRN. This keeps the pixel-to-fringe-order match exact. No color transforms are used. Color is the main carrier of fringe-order information \cite{ajovalasit2015,shorten2019}.
+
+\begin{table}[H]
   \centering
   \caption{Augmentation parameter ranges. Identical transform applied to BMP and \texttt{.frn}.}
   \label{tab:augmentation}
@@ -396,26 +440,23 @@ The main point is that the same AffineTransform object (skimage.transform) uses 
   \end{tabular}
 \end{table}
 
+\FloatBarrier
 \subsection{Feature Extraction}
 \label{sec:features}
 
-A 27-dimensional feature vector is calculated for each pixel using local RGB data (Table~\ref{tab:features}). All 27 features come only from the RGB image. No load, geometry, or material parameters are part of the feature vector. 
+A 27-dimensional feature vector is calculated for each pixel using local RGB data (Table~\ref{tab:features}). All 27 features come only from the RGB image. No load, geometry, or material parameters are part of the feature vector.
 
 The descriptor includes three types of information:
 
-(i) Absolute color shows fractional fringe order with ~\eqref{eq:camera}. 
+(i) Absolute color shows fractional fringe order with~\eqref{eq:camera}.
 
-(ii) Neighborhood statistics give local context and cut down noise. 
+(ii) Neighborhood statistics give local context and cut down noise.
 
 (iii) Texture and edge responses come from gradient, Laplacian, and Gabor filters. They show fringe orientation, density, and how sharp boundaries are.
 
- 
+Gabor filters \cite{daugman1985} help localize both spatial frequency and orientation well. They are proven to be effective for recognizing photoelastic fringe patterns \cite{fandino2018}. Four orientations $(0^\circ, 45^\circ, 90^\circ, 135^\circ)$ cover all angles. Two spatial scales (f1, f2) handle different fringe densities in the training set. The bilateral filter \cite{tomasi1998} is applied with $\sigma_s = 5$~px and $\sigma_r = 25$ intensity units.
 
-Gabor filters \cite{daugman1985} help localize both spatial frequency and orientation well. They are proven to be effective for recognizing photoelastic fringe patterns \cite{fandino2018}. Four orientations $(0^\circ, 45^\circ, 90^\circ, 135^\circ)$ cover all angles. Two spatial scales (f1, f2) handle different fringe densities in the training set. The bilateral filter \cite{tomasi1998}  is applied with$\sigma_s = 5$~px and $\sigma_r = 25$
-intensity units.
-
-
-\begin{table}[htbp]
+\begin{table}[H]
   \centering
   \caption{The 27-dimensional pixel-level feature descriptor.}
   \label{tab:features}
@@ -460,9 +501,9 @@ intensity units.
   \end{tabular}
 \end{table}
 
+\FloatBarrier
 \subsection{Sin/Cos Dual-Target Encoding}
 \label{sec:sincos}
-
 
 Direct scalar regression of $N$ creates a circular gap at integer fringe orders. For example, pixels at $N = 0.01$ and $N = 0.99$ are next to each other, but they are $0.98$ apart in scalar space. This leads to spike artifacts in the predicted $N$ map at integer values of $N$ \cite{zuo2018,ramesh2008}. The solution \cite{mardia2000} is to encode $N$ as a pair of bounded, globally smooth targets:
 \begin{equation}
@@ -470,8 +511,8 @@ Direct scalar regression of $N$ creates a circular gap at integer fringe orders.
   \label{eq:encoding}
 \end{equation}
 
-Two independent XGBoost regressors-the \emph{sin-model} and the
-\emph{cos-model} are trained to predict $y_\mathrm{sin}$ and
+Two independent XGBoost regressors---the \emph{sin-model} and the
+\emph{cos-model}---are trained to predict $y_\mathrm{sin}$ and
 $y_\mathrm{cos}$ respectively. At inference, the fractional fringe order is
 recovered via the four-quadrant arctangent:
 \begin{equation}
@@ -495,14 +536,14 @@ recover the absolute (integer) fringe order.
 
 \subsubsection{Algorithm overview}
 
-XGBoost \cite{chen2016} creates an additive ensemble of shallow decision trees. It fits each new tree to the negative gradient of the loss function. This uses a second-order Taylor expansion. It also includes $L_1$ and $L_2$ regularization. There is row and column subsampling, too. Plus, it features histogram-based split-finding. Plus, it offers GPU acceleration through CUDA. 
+XGBoost \cite{chen2016} creates an additive ensemble of shallow decision trees. It fits each new tree to the negative gradient of the loss function. This uses a second-order Taylor expansion. It also includes $L_1$ and $L_2$ regularization. There is row and column subsampling, too. Plus, it features histogram-based split-finding. Plus, it offers GPU acceleration through CUDA.
 
-XGBoost was chosen for three main reasons: 
+XGBoost was chosen for three main reasons:
 
 \begin{itemize}
-\item The $27$-dimensional image feature vector is a structured table. Gradient-boosted trees work really well with this data
-\item Gain-based feature importance offers clear physical interpretability
-\item GPU-accelerated training can manage the over $70$~GB dataset without needing distributed infrastructure
+\item The $27$-dimensional image feature vector is a structured table. Gradient-boosted trees work really well with this data.
+\item Gain-based feature importance offers clear physical interpretability.
+\item GPU-accelerated training can manage the over $70$~GB dataset without needing distributed infrastructure.
 \end{itemize}
 
 \subsubsection{Hyperparameters}
@@ -511,7 +552,7 @@ Both the sin-model and the cos-model use the hyperparameter configuration
 in Table~\ref{tab:hyperparams}, chosen via preliminary experiments on a
 10\% dataset subset.
 
-\begin{table}[htbp]
+\begin{table}[H]
   \centering
   \caption{XGBoost hyperparameters used identically for sin-model and cos-model.}
   \label{tab:hyperparams}
@@ -548,6 +589,7 @@ in Table~\ref{tab:hyperparams}, chosen via preliminary experiments on a
 \subsubsection{Chunked training and train/test split}
 
 The combined feature CSV exceeds $70$~GB, precluding full in-memory loading. The CSV is read in chunks of $500{,}000$ rows. Every fifth chunk goes to the test set, which is about $20\%$. The rest is for training, around $80\%$. After the single-pass read, all training chunks are combined into an \texttt{xgb.DMatrix} object. Then, \texttt{model.train()} is called. Both Booster objects are saved together in one \texttt{joblib} \texttt{.pkl} bundle for deployment.
+
 \subsection{Evaluation Metrics}
 \label{sec:metrics}
 
@@ -573,6 +615,7 @@ $\lambda = 550$~nm:
 For $h = 6\times10^{-3}$~m and $C = 4.55\times10^{-11}$~m$^2$/N, one
 fringe order corresponds to $\approx 2.015$~MPa.
 
+\FloatBarrier
 % ===========================================================
 \section{Experimental Programme}
 \label{sec:experiment}
@@ -582,18 +625,13 @@ Real experimental fringe images were taken with a white-light transmission circu
 Specimens were made from PSM-1 photoelastic material. It has a stress-optic coefficient of $C = 4.55 \times 10^{-11}$~m$^2$/N and a uniform thickness of $h = 6$~mm. Two specimen types were used for validation: ring specimens and disc specimens (radius $R = 30$~mm). No geometry is in the synthetic training set. This confirms that validation is done on types of geometry that haven't been seen before.
 
 Ground-truth fringe-order maps came from phase-stepping. This used six steps, each at $30^\circ$. We saved the resulting $N$ maps as \texttt{.frn} files. They match the format of the synthetic ground truth.
-\begin{figure}[htbp]
-  \centering
-  \includegraphics[width=0.72\linewidth]{Fig7_experimental_setup}
-  \caption{White-light circular polariscope experimental setup.}
-  \label{fig:setup}
-\end{figure}
 
 \subsection{Image Preprocessing and Normalisation}
 \label{sec:preprocessing}
 
 Before feature extraction, we mask and normalize each image. We use intensity thresholding and morphological erosion. This removes the inner hole and outer background from the evaluation metrics.
 
+\FloatBarrier
 % ===========================================================
 \section{Results}
 \label{sec:results}
@@ -605,7 +643,7 @@ rows across 570 synthetic and 280 real augmented images.
 Table~\ref{tab:dataset_stats} provides the per-geometry and per-domain
 breakdown.
 
-\begin{table}[htbp]
+\begin{table}[H]
   \centering
   \caption{Dataset statistics by geometry and domain after chunked
     train/test split.}
@@ -628,9 +666,9 @@ breakdown.
 \subsection{Training Convergence}
 \label{sec:convergence}
 
-Both models trained smoothly. The training RMSE kept dropping over the $5{,}000$ rounds, and neither model stopped early. This shows that the models hadn't hit their performance ceiling at the $5{,}000$-round limit. So, the reported metrics are a conservative estimate of the method's potential accuracy. Boosting the round budget should lead to more improvement. It’s a key focus for future efforts. The lack of over-fitting shows that the test RMSE matches the training RMSE closely. This confirms that regularisation works well on the entire $70$~GB dataset.
+Both models trained smoothly. The training RMSE kept dropping over the $5{,}000$ rounds, and neither model stopped early. This shows that the models hadn't hit their performance ceiling at the $5{,}000$-round limit. So, the reported metrics are a conservative estimate of the method's potential accuracy. Boosting the round budget should lead to more improvement. It's a key focus for future efforts. The lack of over-fitting shows that the test RMSE matches the training RMSE closely. This confirms that regularisation works well on the entire $70$~GB dataset.
 
-\begin{figure}[htbp]
+\begin{figure}[H]
   \centering
   \includegraphics[width=0.96\linewidth]{Fig5_convergence}
   \caption{XGBoost training convergence. (a) Sin-model. (b) Cos-model.
@@ -646,7 +684,7 @@ Both models trained smoothly. The training RMSE kept dropping over the $5{,}000$
 Table~\ref{tab:overall_performance} summarises performance on the held-out
 synthetic test set.
 
-\begin{table}[htbp]
+\begin{table}[H]
   \centering
   \caption{Overall fringe order prediction performance on the held-out
     synthetic test set. All metrics are conservative estimates; see
@@ -667,7 +705,7 @@ synthetic test set.
 
 \subsection{Per-Geometry Breakdown}
 
-\begin{table}[htbp]
+\begin{table}[H]
   \centering
   \caption{Per-geometry fringe order prediction performance on the
     held-out synthetic test set. All metrics in fringe orders.}
@@ -687,7 +725,7 @@ synthetic test set.
   \end{tabular}
 \end{table}
 
-\begin{figure}[htbp]
+\begin{figure}[H]
   \centering
   \includegraphics[width=0.96\linewidth]{Fig6_N_map_comparison}
   \caption{Ground-truth vs.\ predicted fringe order maps for representative
@@ -699,9 +737,9 @@ synthetic test set.
 
 \subsection{Feature Importance}
 
-The average gain-based feature importance for the sin-model and cos-model is shown in Fig.~6. The coarse Gabor filter at $45^\circ$ (\texttt{Gabor2\_45}, gain~267.7) is the top feature. Here are the circular hue encodings: \texttt{HueCos} at 173.3, \texttt{HueSin} at 156.9, and the normalized red channel, \texttt{R\_norm}, at 160.9. Colour-based features dominate texture features, following the physical model in Eq.~(4).
+The average gain-based feature importance for the sin-model and cos-model is shown in Fig.~\ref{fig:feature_importance}. The coarse Gabor filter at $45^\circ$ (\texttt{Gabor2\_45}, gain~267.7) is the top feature. Here are the circular hue encodings: \texttt{HueCos} at 173.3, \texttt{HueSin} at 156.9, and the normalized red channel, \texttt{R\_norm}, at 160.9. Colour-based features dominate texture features, following the physical model in Eq.~\eqref{eq:camera}.
 
-\begin{figure}[htbp]
+\begin{figure}[H]
   \centering
   \includegraphics[width=0.94\linewidth]{Fig9_feature_importance}
   \caption{XGBoost feature importance (mean gain) averaged over sin-model
@@ -713,11 +751,9 @@ The average gain-based feature importance for the sin-model and cos-model is sho
 
 \subsection{Validation on Unseen Experimental Specimens}
 
-The trained model was applied to full-field prediction on ring and disc
-experimental specimens not included in any stage of training.
-Table~\ref{tab:experimental_results} reports quantitative performance.
+The trained model was used for full-field prediction on ring and disc specimens. These specimens were not part of the training stages. Table~\ref{tab:experimental_results} reports quantitative performance.
 
-\begin{table}[htbp]
+\begin{table}[H]
   \centering
   \caption{Fringe order prediction performance on unseen experimental
     specimens. All metrics in fringe orders.}
@@ -733,7 +769,7 @@ Table~\ref{tab:experimental_results} reports quantitative performance.
   \end{tabular}
 \end{table}
 
-\begin{figure}[htbp]
+\begin{figure}[H]
   \centering
   \includegraphics[width=0.96\linewidth]{Fig8_experimental_validation}
   \caption{Full-field fringe order prediction on unseen experimental specimens.
@@ -745,13 +781,9 @@ Table~\ref{tab:experimental_results} reports quantitative performance.
 \subsubsection{Detailed Analysis: Ring Specimen}
 \label{sec:ring_detail}
 
-Fig.~\ref{fig:ring_best_result} presents the complete best-result analysis
-for the ring specimen under the optimal inference hyperparameters
-(global normalisation, $\sigma = 2.0$, erosion disk~$= 7$, blend
-weight~$= 1.0$), selected by the automated grid search
-(Section~\ref{sec:hyperparameter_sweep}).
+Fig.~\ref{fig:ring_best_result} shows the best-result analysis for the ring specimen. This is based on the best hyperparameters: global normalization, $\sigma = 2.0$, erosion disk $= 7$, and blend weight $= 1.0$. These were chosen by the automated grid search in Section~\ref{sec:hyperparameter_sweep}.
 
-\begin{figure}[htbp]
+\begin{figure}[H]
   \centering
   \includegraphics[width=0.98\linewidth]{auto_best_result}
   \caption{Best-result analysis for the ring specimen.
@@ -764,7 +796,7 @@ weight~$= 1.0$), selected by the automated grid search
   \label{fig:ring_best_result}
 \end{figure}
 
-\begin{figure}[htbp]
+\begin{figure}[H]
   \centering
   \begin{minipage}[t]{0.32\linewidth}
     \centering
@@ -786,7 +818,7 @@ weight~$= 1.0$), selected by the automated grid search
   \end{minipage}
 \end{figure}
 
-\begin{figure}[htbp]
+\begin{figure}[H]
   \centering
   \includegraphics[width=0.49\linewidth]{ind_f_profile_horizontal}
   \hfill
@@ -797,79 +829,28 @@ weight~$= 1.0$), selected by the automated grid search
   \label{fig:ring_profiles}
 \end{figure}
 
+\FloatBarrier
 % ===========================================================
 \section{Discussion}
 \label{sec:discussion}
 
 \subsection{Accuracy and Physical Interpretation}
+The RMSE is $0.1112$ fringe orders on the synthetic test set. This indicates a principal stress difference uncertainty of roughly $0.224$~MPa. This comes from Eq.~\eqref{eq:stress_uncertainty}. We set $h = 6$~mm and $C = 4.55 \times 10^{-11}$~m$^2$/N. TFP with advancing-front refinement has an RMSE of about $0.02$--$0.05$ fringe orders in clear areas \cite{madhu2007,kale2013}. Phase-stepping methods can reach sub-$0.01$ fringe orders in controlled settings \cite{wang1995,siegmann2005}. The current ML method is between standard TFP and scanning-refined TFP. It provides accuracy in smooth fringe areas. The reported metrics are conservative lower bounds. This is because training had not fully converged by the $5{,}000$-round budget (see Section~\ref{sec:convergence}).
 
-The overall RMSE of 0.1112 fringe orders on the synthetic test set
-corresponds to a principal stress difference uncertainty of approximately
-0.224~MPa (Eq.~\ref{eq:stress_uncertainty}, $h=6$~mm,
-$C=4.55\times10^{-11}$~m$^2$/N). For context, TFP with advancing-front
-refinement achieves RMSE~$\approx 0.02$--$0.05$ fringe orders in
-well-resolved regions \cite{madhu2007,kale2013}, and phase-stepping methods
-achieve sub-0.01 fringe orders under controlled conditions
-\cite{wang1995,siegmann2005}. The present ML approach falls between standard
-TFP and scanning-refined TFP accuracy in smooth fringe regions. The reported
-metrics are conservative lower bounds, as training had not yet converged at
-the 5{,}000-round budget (Section~\ref{sec:convergence}).
+The sin/cos encoding (Eqs.~\eqref{eq:encoding}--\eqref{eq:recovery}) got rid of the integer wrap-around artifacts seen in early scalar regression tests. It fixed the circular gap. Plus, it didn't add a spatial continuity penalty to the loss function \cite{mohan2024,ramesh2008}. The quality metric $\varepsilon$ provides a natural per-pixel uncertainty estimate without additional computation.
 
-The sin/cos encoding (Eqs.~\eqref{eq:encoding}--\eqref{eq:recovery})
-completely eliminated the integer wrap-around artefacts observed in
-preliminary scalar regression experiments, confirming resolution of the
-circular discontinuity without a spatial continuity penalty in the loss
-function \cite{mohan2024,ramesh2008}. The quality metric $\varepsilon$
-provides a natural per-pixel uncertainty estimate without additional
-computation.
-
-The gain-based feature importance (Fig.~\ref{fig:feature_importance}) shows
-that \texttt{Gabor2\_45} (mean gain~267.7) is the single most discriminating
-feature, followed by circular hue encoding and normalised colour. This is
-physically interpretable: the coarse Gabor at $45^\circ$ captures the
-diagonal fringe texture characteristic of the isochromatic pattern, while
-hue encoding directly reflects the spectral signature encoded in
-Eq.~\eqref{eq:camera}.
+The gain-based feature importance (Fig.~\ref{fig:feature_importance}) shows that \texttt{Gabor2\_45}, with a mean gain of $267.7$, is the top feature. Next are circular hue encoding and normalized color. The coarse Gabor at $45^\circ$ shows the diagonal fringe texture of the isochromatic pattern. Also, hue encoding directly reflects the spectral signature from Eq.~\eqref{eq:camera}.
 
 \subsection{Ring Specimen Performance}
+The ring specimen has an RMSE of $0.4912$ fringe orders. This is much higher than the disc result of $0.2301$. So, it deserves a closer look. The error map (Fig.~\ref{fig:ring_error}) shows that high errors cluster around the inner and outer ring boundaries. These areas have steep $|\nabla N|$ values. The pixel-wise model lacks a spatial continuity constraint. So, it can't spread context across sharp fringe gradients. This limitation is due to the current approach, not a generalization failure. The smooth inner area of the ring has low error (RMSE $= 0.1445$ with optimal inference, SSIM $= 0.9670$, Fig.~\ref{fig:ring_best_result}). This performance is similar to the disc result.
 
-The ring specimen RMSE of 0.4912 fringe orders is substantially higher than
-the disc result (0.2301), and warrants explicit discussion. The error map
-(Fig.~\ref{fig:ring_error}) reveals that high errors are concentrated along
-the inner and outer ring boundaries---regions of steep $|\nabla N|$. The
-pixel-wise model has no spatial continuity constraint, so it cannot
-propagate context across sharp fringe gradients. This is a structural
-limitation of the current approach rather than a generalisation failure: the
-smooth interior region of the ring achieves low error (RMSE~$= 0.1445$
-under optimal inference parameters, SSIM~$= 0.9670$, Fig.~\ref{fig:ring_best_result}),
-comparable to the disc result.
-
-Two factors compound the boundary error. First, the ground-truth phase-stepped
-$N$ map for the ring specimen also contains higher uncertainty near the inner
-boundary due to steep fringe gradients. Second, the ring geometry---with its
-concentric high-gradient annular fringe bands---differs substantially from
-any geometry in the synthetic training set, limiting the representativeness
-of learned boundary features. Integration with quality-guided phase
-unwrapping \cite{ramji2010,ramesh2004}, using the $\varepsilon$ confidence
-metric to down-weight boundary pixels, is anticipated to substantially
-reduce this error.
+Two factors compound the boundary error. The ground-truth phase-stepped $N$ map for the ring specimen has more uncertainty near the inner boundary. This is because of the steep fringe gradients there. The ring geometry has concentric high-gradient bands. This is very different from any geometry in the synthetic training set. As a result, it limits how well the learned boundary features apply. Using quality-guided phase unwrapping \cite{ramji2010,ramesh2004} with the $\varepsilon$ confidence metric will likely cut down on errors. This method lowers the weight of boundary pixels. As a result, the accuracy improves.
 
 \subsection{Comparison with Existing Methods}
 
-Table~\ref{tab:comparison} places the proposed method alongside
-representative demodulation approaches. The proposed method requires no
-material-specific calibration specimen or LUT, no motorised retarder, and
-only a single image. It provides direct physical interpretability through
-gain-based feature importance, which distinguishes it from deep learning
-approaches such as FringeNet \cite{mohan2024} where saliency maps are
-required as a post-hoc approximation. A quantitative comparison with
-FringeNet on a common benchmark dataset is not presented here because the
-Isochromatic-Art dataset \cite{mohan2024} employs a different specimen
-set, spectral rendering pipeline, and evaluation protocol from the present
-work; such a comparison on a unified benchmark is identified as important
-future work.
+Table~\ref{tab:comparison} places the proposed method alongside representative demodulation approaches. The proposed method needs no special calibration specimen or LUT. It doesn't require a motorized retarder and only uses one image. It offers clear physical interpretability through gain-based feature importance. This makes it different from deep learning methods like FringeNet \cite{mohan2024}. Those methods require saliency maps as a post-hoc approximation. We do not present a quantitative comparison with FringeNet here. The Isochromatic-Art dataset \cite{mohan2024} has a unique specimen set. It also uses a different spectral rendering pipeline and evaluation protocol. Comparing on a common benchmark is important for future work.
 
-\begin{table}[htbp]
+\begin{table}[H]
   \centering
   \caption{Comparison of fringe order demodulation methods. Calibration
     refers to a material-specific LUT or calibration specimen.}
@@ -903,104 +884,75 @@ future work.
 \subsection{Inference Hyperparameter Selection}
 \label{sec:hyperparameter_sweep}
 
-At inference time, three post-processing hyperparameters affect the final
-predicted $\hat{N}$ map: the normalisation mode (per-channel or global),
-the Gaussian smoothing $\sigma$ applied to the sin/cos maps before
-$\mathrm{arctan2}$ recovery, and the morphological erosion disk radius.
-An automated grid search over $2 \times 4 \times 3 = 24$ combinations was
-performed, selecting the combination that minimises
-$\mathrm{RMSE} - 0.5 \times \mathrm{SSIM}$. The optimal combination---
-$\sigma = 2.0$, erosion disk~$= 7$---achieves RMSE~$= 0.1445$ fringe
-orders and SSIM~$= 0.9670$.
+At inference time, three post-processing hyperparameters influence the final predicted $\hat{N}$ map:
+
+\begin{itemize}
+\item The normalization mode (per-channel or global)
+\item The Gaussian smoothing ($\sigma$) applied to the sin/cos maps before $\mathrm{arctan2}$ recovery
+\item The morphological erosion disk radius
+\end{itemize}
+
+An automated grid search tested $24$ combinations ($2 \times 4 \times 3$). It picked the one that lowers $\mathrm{RMSE} - 0.5 \times \mathrm{SSIM}$. The optimal combination---$\sigma = 2.0$, erosion disk $= 7$---achieves RMSE $= 0.1445$ fringe orders and SSIM $= 0.9670$.
 
 \subsection{Limitations}
 
-Four limitations should be noted. First, the model predicts fractional
-fringe order only; integer-order recovery requires a phase-unwrapping step
-\cite{ramesh2004,ramji2008}. Second, the pixel-wise model imposes no
-spatial continuity across predictions; CNN or CRF post-processing is
-expected to reduce boundary errors \cite{mohan2024,brinezdeleon2024}.
-Third, the synthetic training set covers three analytical geometries;
-specimens with complex three-dimensional stress states or FEM-required
-boundary conditions were not included. Fourth, both models reached the
-5{,}000-round training budget without converging; all reported metrics
-are therefore conservative, and increased training rounds are expected to
-improve performance.
+Four limitations should be noted. The model predicts fractional fringe order first. To recover integer order, a phase-unwrapping step is needed \cite{ramesh2004,ramji2008}. Second, the pixel-wise model doesn't ensure spatial continuity in predictions. So, CNN or CRF post-processing can help reduce boundary errors \cite{mohan2024,brinezdeleon2024}. Third, the synthetic training set includes three analytical geometries. It doesn't include samples with complex 3D stress states or boundary conditions for FEM. Both models hit the $5{,}000$-round training limit but did not fully converge. So, the metrics are conservative. More training rounds should improve performance.
 
 \subsection{Future Work}
 
-Future directions include: (i) extended training beyond 5{,}000 rounds to
-reach full convergence; (ii) integration with quality-guided phase-unwrapping
-\cite{ramji2010,ramesh2004} using the $\varepsilon$ confidence map;
-(iii) FEM-based synthetic data generation for complex geometries;
-(iv) domain adaptation for improved illumination robustness
-\cite{brinezdeleon2024}; (v) evaluation on the Isochromatic-Art benchmark
-\cite{mohan2024} for a direct comparison with FringeNet; and (vi) ablation
-studies quantifying the contribution of individual feature groups and the
-sin/cos encoding.
+Future directions include:
 
+\begin{itemize}
+\item Training for over $5{,}000$ rounds to reach full convergence.
+\item Combining with quality-guided phase-unwrapping \cite{ramji2010,ramesh2004} using the $\varepsilon$ confidence map.
+\item Creating synthetic data with FEM for complex shapes.
+\item Adapting for improved performance in various lighting conditions \cite{brinezdeleon2024}.
+\item Testing on the Isochromatic-Art benchmark \cite{mohan2024} to compare directly with FringeNet.
+\item Conducting ablation studies to assess the impact of each feature group and sin/cos encoding.
+\end{itemize}
+
+\FloatBarrier
 % ===========================================================
 \section{Conclusion}
 \label{sec:conclusion}
+This paper shows a fringe order demodulation method for digital photoelasticity. It uses dual XGBoost regression with trigonometrically encoded targets. The main design principle is to infer from image features only. A $27$-dimensional pixel-level descriptor is created from the RGB image.
 
-This paper presented a whole-field fringe order demodulation method for
-digital photoelasticity based on dual XGBoost regression of
-trigonometrically encoded targets. The key design principle is inference
-from image features alone: a 27-dimensional pixel-level descriptor---
-encoding normalised colour, circular hue, saturation, neighbourhood
-statistics, bilateral filter responses, gradient, Laplacian, and
-multi-scale Gabor filter outputs---is computed from the RGB image, with no
-access to applied load, specimen geometry, or material constants at inference
-time.
+This descriptor includes:
 
-The sin/cos dual-target encoding cleanly resolves the circular discontinuity
-at integer fringe orders, eliminating wrap-around artefacts without requiring
-a spatial continuity penalty in the loss function. Physics-based analytical
-solutions are used exclusively in the data generation phase to produce
-synthetic fringe images across three specimen geometries and ten spectral
-conditions; load values are not features of the trained model.
+\begin{itemize}
+\item Normalized color
+\item Circular hue
+\item Saturation
+\item Neighborhood statistics
+\item Bilateral filter responses
+\item Gradient
+\item Laplacian
+\item Multi-scale Gabor filter outputs
+\end{itemize}
 
-GPU-accelerated XGBoost processed the ${>}70$~GB dataset in memory-efficient
-500k-row chunks. Experimental validation on unseen ring and disc specimens
-demonstrated RMSE~$= 0.1112$ fringe orders ($R^2 = 0.8485$) on the
-held-out synthetic test set, and RMSE~$= 0.2301$ fringe orders
-($R^2 = 0.9609$) on the disc experimental specimen. These figures represent
-conservative lower bounds, as training had not yet converged at the
-5{,}000-round budget. The gain-based feature importance ranking provides
-direct physical insight, with colour and orientation features dominating,
-consistent with the underlying spectral physics of isochromatic fringe
-formation. Future integration with quality-guided phase-unwrapping will
-extend the method to absolute fringe order maps.
+It does this without needing any applied load, specific shape, or material constants.
+
+The sin/cos dual-target encoding fixes the circular break at integer fringe orders. It removes wrap-around artifacts. It also doesn't require a spatial continuity penalty in the loss function. Physics-based analytical solutions are only used during data generation. They create synthetic fringe images for three specimen shapes and ten spectral conditions. Load values are not part of the trained model's features.
+
+GPU-accelerated XGBoost processed the ${>}70$~GB dataset in memory-efficient $500$k-row chunks. Experimental tests on new ring and disc samples showed an RMSE of $0.1112$ fringe orders. The $R^2$ value was $0.8485$ for the synthetic test set. For the disc specimen, RMSE $= 0.2301$ fringe orders ($R^2 = 0.9609$). These figures show lower limits. Training wasn't completed within the $5{,}000$-round budget. The gain-based feature importance ranking gives clear physical insights. Color and orientation features are clear. They match the spectral physics of isochromatic fringe formation. Future integration with quality-guided phase unwrapping will improve the method. It will apply to absolute fringe order maps.
 
 % ===========================================================
 \section*{Acknowledgements}
 
-[Acknowledge supervisor, institution, funding body, laboratory support, and
-any computational resources used here.]
+We express our sincere gratitude to our guide, Dr. Hariprasad M.P., for his invaluable guidance, support, and encouragement throughout this work.
 
-% ===========================================================
-\section*{CRediT Author Contribution Statement}
+We also thank Dr. Balakrishnan Shankar, Chairperson, Department of Mechanical Engineering, for providing the necessary facilities and a conducive research environment.
 
-[Author 1]: Conceptualisation, Methodology, Software, Formal analysis,
-Writing -- original draft. [Author 2]: Supervision, Writing -- review \&
-editing, Resources.
+We gratefully acknowledge Dr. Vishnu Mohan for his insightful suggestions and continuous assistance. We also thank the faculty, staff, and review panel of the Department of Mechanical Engineering, Amrita School of Engineering, Amritapuri, for their support and constructive feedback.
 
-% ===========================================================
+Finally, we extend our heartfelt thanks to our parents, family, and friends for their constant encouragement and support.
+
+
 \section*{Declaration of Competing Interests}
 
 The authors declare that they have no known competing financial interests or
 personal relationships that could have appeared to influence the work
 reported in this paper.
-
-% ===========================================================
-\section*{Data Availability Statement}
-
-The source code for the complete pipeline (\texttt{generate\_dataset.py},
-\texttt{augmentation.py}, \texttt{processing\_pipeline\_better.py},
-\texttt{Trainer\_better.py}, and \texttt{Tester.py}) and the synthetic
-dataset generation scripts are available at [repository URL]. The real
-experimental image dataset will be made available upon reasonable request
-to the corresponding author.
 
 % ===========================================================
 \bibliographystyle{elsarticle-num}
@@ -1012,7 +964,7 @@ to the corresponding author.
 \section{Material and Optical Constants}
 \label{app:constants}
 
-\begin{table}[htbp]
+\begin{table}[H]
   \centering
   \caption{Material and optical constants used in synthetic image generation.
     These constants are used only during data generation.}
