@@ -495,13 +495,14 @@ recover the absolute (integer) fringe order.
 
 \subsubsection{Algorithm overview}
 
-XGBoost \cite{chen2016} creates an additive ensemble of shallow decision trees by fitting each new tree to the negative gradient of the loss function using a second-order Taylor expansion. It incorporates $L_1$ and $L_2$ regularisation, row and column subsampling, histogram-based split-finding, and GPU acceleration via CUDA.
+XGBoost \cite{chen2016} creates an additive ensemble of shallow decision trees. It fits each new tree to the negative gradient of the loss function. This uses a second-order Taylor expansion. It also includes $L_1$ and $L_2$ regularization. There is row and column subsampling, too. Plus, it features histogram-based split-finding. Plus, it offers GPU acceleration through CUDA. 
 
-XGBoost was chosen for three main reasons:
+XGBoost was chosen for three main reasons: 
+
 \begin{itemize}
-    \item The $27$-dimensional image feature vector is a structured tabular input for which gradient-boosted trees achieve state-of-the-art performance \cite{chen2016,prokhorenkova2018}.
-    \item Gain-based feature importance provides clear physical interpretability.
-    \item GPU-accelerated training can handle the ${>}70$~GB dataset without requiring distributed infrastructure.
+\item The $27$-dimensional image feature vector is a structured table. Gradient-boosted trees work really well with this data
+\item Gain-based feature importance offers clear physical interpretability
+\item GPU-accelerated training can manage the over $70$~GB dataset without needing distributed infrastructure
 \end{itemize}
 
 \subsubsection{Hyperparameters}
@@ -546,8 +547,7 @@ in Table~\ref{tab:hyperparams}, chosen via preliminary experiments on a
 
 \subsubsection{Chunked training and train/test split}
 
-The combined feature CSV exceeds $70$~GB, precluding full in-memory loading. The CSV is read in chunks of $500{,}000$ rows. Every fifth chunk is assigned to the test set (${\approx}20\%$), while the remainder is used for training (${\approx}80\%$). After the single-pass read, all training chunks are combined into an \texttt{xgb.DMatrix} object, and \texttt{model.train()} is called. Both Booster objects are saved together as a single \texttt{joblib} \texttt{.pkl} bundle for deployment.
-
+The combined feature CSV exceeds $70$~GB, precluding full in-memory loading. The CSV is read in chunks of $500{,}000$ rows. Every fifth chunk goes to the test set, which is about $20\%$. The rest is for training, around $80\%$. After the single-pass read, all training chunks are combined into an \texttt{xgb.DMatrix} object. Then, \texttt{model.train()} is called. Both Booster objects are saved together in one \texttt{joblib} \texttt{.pkl} bundle for deployment.
 \subsection{Evaluation Metrics}
 \label{sec:metrics}
 
@@ -577,11 +577,11 @@ fringe order corresponds to $\approx 2.015$~MPa.
 \section{Experimental Programme}
 \label{sec:experiment}
 
-Real experimental fringe images were acquired using a white-light transmission circular polariscope. The setup consisted of two linear polarisers and two quarter-wave plates arranged in a standard dark-field circular configuration \cite{dally1991,ramesh2000}. The light source was a broadband white-LED panel. Images were captured with a colour digital camera at $602 \times 461$ pixels, 8-bit RGB, with a pixel scale of $0.5$~mm/pixel.
+Real experimental fringe images were taken with a white-light transmission circular polariscope. The setup had two linear polarisers and two quarter-wave plates. This was arranged in a standard dark-field circular format \cite{dally1991,ramesh2000}. The light source was a broadband white-LED panel. A colour digital camera captured images at $602 \times 461$ pixels, 8-bit RGB, with a pixel scale of $0.5$~mm/pixel.
 
-Specimens were fabricated from PSM-1 photoelastic material with a stress-optic coefficient of $C = 4.55 \times 10^{-11}$~m$^2$/N and a uniform thickness of $h = 6$~mm. Two specimen types were used for validation: ring specimens and disc specimens (radius $R = 30$~mm). Neither geometry appears in the synthetic training set, confirming that validation is conducted on unseen geometry types.
+Specimens were made from PSM-1 photoelastic material. It has a stress-optic coefficient of $C = 4.55 \times 10^{-11}$~m$^2$/N and a uniform thickness of $h = 6$~mm. Two specimen types were used for validation: ring specimens and disc specimens (radius $R = 30$~mm). No geometry is in the synthetic training set. This confirms that validation is done on types of geometry that haven't been seen before.
 
-Ground-truth fringe-order maps were obtained using phase-stepping (six steps, $30^\circ$ per step). The resulting $N$ maps were saved as \texttt{.frn} files in the same format as the synthetic ground truth.
+Ground-truth fringe-order maps came from phase-stepping. This used six steps, each at $30^\circ$. We saved the resulting $N$ maps as \texttt{.frn} files. They match the format of the synthetic ground truth.
 \begin{figure}[htbp]
   \centering
   \includegraphics[width=0.72\linewidth]{Fig7_experimental_setup}
@@ -628,7 +628,7 @@ breakdown.
 \subsection{Training Convergence}
 \label{sec:convergence}
 
-Both models trained smoothly. The training RMSE continued to decrease over the $5{,}000$ rounds, and neither model triggered early stopping. This indicates that the models had not yet reached their performance ceiling at the $5{,}000$-round limit. Therefore, the reported metrics represent a conservative estimate of the method's achievable accuracy. Increasing the round budget is expected to yield further improvement and is identified as a priority for future work. The absence of over-fitting---evidenced by the close agreement between test and training RMSE---confirms that regularisation is effective across the full $70$~GB dataset.
+Both models trained smoothly. The training RMSE kept dropping over the $5{,}000$ rounds, and neither model stopped early. This shows that the models hadn't hit their performance ceiling at the $5{,}000$-round limit. So, the reported metrics are a conservative estimate of the method's potential accuracy. Boosting the round budget should lead to more improvement. It’s a key focus for future efforts. The lack of over-fitting shows that the test RMSE matches the training RMSE closely. This confirms that regularisation works well on the entire $70$~GB dataset.
 
 \begin{figure}[htbp]
   \centering
@@ -699,13 +699,7 @@ synthetic test set.
 
 \subsection{Feature Importance}
 
-The gain-based feature importance averaged over the sin-model and cos-model
-is presented in Fig.~\ref{fig:feature_importance}. The coarse Gabor filter
-at 45\textdegree{} orientation (\texttt{Gabor2\_45}, gain~267.7) is the
-single most discriminating feature, followed by circular hue encoding
-(\texttt{HueCos}, 173.3; \texttt{HueSin}, 156.9) and normalised red channel
-(\texttt{R\_norm}, 160.9). Colour-based features collectively dominate over
-texture features, consistent with the physical model of Eq.~\eqref{eq:camera}.
+The average gain-based feature importance for the sin-model and cos-model is shown in Fig.~6. The coarse Gabor filter at $45^\circ$ (\texttt{Gabor2\_45}, gain~267.7) is the top feature. Here are the circular hue encodings: \texttt{HueCos} at 173.3, \texttt{HueSin} at 156.9, and the normalized red channel, \texttt{R\_norm}, at 160.9. Colour-based features dominate texture features, following the physical model in Eq.~(4).
 
 \begin{figure}[htbp]
   \centering
