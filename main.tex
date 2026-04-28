@@ -1,10 +1,6 @@
-\documentclass[12pt,a4paper]{article}
+\documentclass[review,12pt]{elsarticle}
 
 % --- Core packages ------------------------------------------
-\usepackage[T1]{fontenc}
-\usepackage[utf8]{inputenc}        
-\usepackage{lmodern}
-\usepackage{microtype} 
 \usepackage{amsmath,amssymb}
 \usepackage{bm}
 \usepackage{graphicx}
@@ -13,135 +9,54 @@
 \usepackage{array}
 \usepackage{tabularx}
 \usepackage{longtable}
-\usepackage{float}
 \usepackage{caption}
 \usepackage{subcaption}
 \usepackage{xcolor}
-\usepackage{hyperref}
 \usepackage{url}
-\usepackage[numbers]{natbib}
-\usepackage{geometry}
-\usepackage{setspace}
-\usepackage{parskip}
+\usepackage{hyperref}
+\usepackage{microtype}
 \usepackage{enumitem}
-\usepackage{fancyhdr}
-\usepackage{titlesec}
 \usepackage{cleveref}
-\setlength{\headheight}{14pt}
 \sloppy
-
-% --- Page geometry ------------------------------------------
-\geometry{
-  a4paper,
-  top    = 25mm,
-  bottom = 25mm,
-  left   = 25mm,
-  right  = 25mm
-}
-
-% --- Line spacing -------------------------------------------
-\onehalfspacing
-
-% --- Hyperref setup -----------------------------------------
-\hypersetup{
-  colorlinks  = true,
-  linkcolor   = blue!70!black,
-  citecolor   = blue!70!black,
-  urlcolor    = blue!70!black,
-  pdftitle    = {Whole Field Methods for Fringe Order Demodulation Using
-                 Machine Learning Approach in Digital Photoelasticity},
-  pdfauthor   = {Author Name(s)},
-  pdfkeywords = {digital photoelasticity; fringe order demodulation;
-                 XGBoost; machine learning; isochromatic fringes}
-}
-
-% --- Section formatting -------------------------------------
-\titleformat{\section}{\large\bfseries\uppercase}{}{0em}{}[\titlerule]
-\titleformat{\subsection}{\normalsize\bfseries}{\thesubsection.\ }{0em}{}
-\titleformat{\subsubsection}{\normalsize\itshape}{\thesubsubsection.\ }{0em}{}
-
-% --- Caption formatting -------------------------------------
-\captionsetup{
-  font        = small,
-  labelfont   = bf,
-  format      = hang,
-  justification = justified
-}
+\graphicspath{{figures/}{./}}
 
 % --- Table column types -------------------------------------
 \newcolumntype{L}[1]{>{\raggedright\arraybackslash}p{#1}}
 \newcolumntype{C}[1]{>{\centering\arraybackslash}p{#1}}
 \newcolumntype{R}[1]{>{\raggedleft\arraybackslash}p{#1}}
 
-\newcommand{\figplaceholder}[3]{%
-  \begin{center}
-    \fboxsep=6pt
-    \fbox{%
-      \parbox{#3}{%
-        \centering
-        \vspace{1.2cm}
-        {\large\bfseries [FIGURE~#1]}\\[4pt]
-        {\small\texttt{#2}}\\[4pt]
-        {\footnotesize (placeholder --- swap \textbackslash figplaceholder for
-         \textbackslash includegraphics when ready)}
-        \vspace{1.2cm}
-      }%
-    }%
-  \end{center}
-}
-
-
 % ===========================================================
 \begin{document}
-\graphicspath{{figures/}{./}}
 
-% --- Title block -------------------------------------------
-\begin{titlepage}
-\centering
-\vspace*{2cm}
+\begin{frontmatter}
 
-{\LARGE\bfseries
-  Whole Field Methods for Fringe Order Demodulation\\[0.4em]
-  Using Machine Learning Approach\\[0.4em]
-  in Digital Photoelasticity\par}
+\title{Whole Field Methods for Fringe Order Demodulation Using Machine Learning Approach in Digital Photoelasticity}
 
-\vspace{1.5cm}
+\author[inst1]{[Author Name(s)]\corref{cor1}}
+\cortext[cor1]{Corresponding author}
+\ead{author@institution.edu}
 
-{\large [Author Name(s)]\par}
+\affiliation[inst1]{organization={Department of Mechanical Engineering, Institution Name},
+             city={City},
+             country={Country}}
 
-\vspace{0.5cm}
-
-{\normalsize
-  [Department of Mechanical Engineering, Institution Name, City, Country]\\[0.3em]
-  Corresponding author: \href{mailto:author@institution.edu}{author@institution.edu}\par}
-
-\vspace{0.5cm}
-
-{\small Received: DD Month YYYY \quad|\quad
-        Revised: DD Month YYYY \quad|\quad
-        Accepted: DD Month YYYY\par}
-
-\vspace{2cm}
-
-% --- Abstract ----------------------------------------------
 \begin{abstract}
-\setlength{\parindent}{0pt}
 Digital photoelasticity is a well-established full-field optical technique
 for experimental stress analysis of engineering components. The reliable
 determination of the isochromatic fringe order $N$ across the entire field
 of view---whole-field fringe order demodulation---remains a central
 challenge, particularly under variable illumination and for complex specimen
 geometries. Classical approaches including RGB three-fringe photoelasticity
-\citep{ajovalasit1995,ramesh1996}, multi-step phase-shifting
-\citep{wang1995,siegmann2005}, and Fourier-transform-based methods
-\citep{quan1993} each impose constraints on experimental setup, fringe
+\cite{ajovalasit1995,ramesh1996}, multi-step phase-shifting
+\cite{wang1995,siegmann2005}, and Fourier-transform-based methods
+\cite{quan1993} each impose constraints on experimental setup, fringe
 density, or number of image acquisitions. Recent deep learning approaches
-have demonstrated promising results \citep{tao2022,naranjo2022,mohan2024}
+have demonstrated promising results \cite{tao2022,naranjo2022,mohan2024}
 but are parameter-intensive and require large labelled training sets.
 
 This paper proposes a whole-field, single-image fringe order demodulation
 framework based on extreme gradient-boosted decision trees (XGBoost)
-\citep{chen2016}. At inference the method requires only a single RGB
+\cite{chen2016}. At inference the method requires only a single RGB
 isochromatic image and predicts the fractional fringe order $\hat{N}$ at
 every pixel; no knowledge of applied load, specimen geometry, or material
 constants is used. A dual-model architecture predicts the sine and cosine
@@ -160,41 +75,31 @@ The method is calibration-free, illumination-robust, and deployable across
 arbitrary specimen geometries without retraining.
 \end{abstract}
 
-\vspace{0.5cm}
+\begin{keyword}
+digital photoelasticity \sep fringe order demodulation \sep XGBoost \sep
+machine learning \sep isochromatic fringes \sep whole-field measurement \sep
+synthetic dataset \sep RGB photoelasticity \sep stress analysis
+\end{keyword}
 
-\noindent\textbf{Keywords:} digital photoelasticity; fringe order demodulation;
-XGBoost; machine learning; isochromatic fringes; whole-field measurement;
-synthetic dataset; RGB photoelasticity; stress analysis
-
-\end{titlepage}
-
-% ===========================================================
-\setcounter{page}{1}
-\pagestyle{fancy}
-\fancyhf{}
-\rhead{\small Whole-Field Fringe Order Demodulation via XGBoost}
-\lhead{\small [Author Name(s)]}
-\cfoot{\thepage}
+\end{frontmatter}
 
 % ===========================================================
 \section{Introduction}
 \label{sec:intro}
-Photoelasticity is a key method for stress analysis. It has been used since the early 1900s. 
-Polarized white light passes through a birefringent specimen under load. 
-This creates isochromatic fringe patterns on a color camera. 
-These patterns display the main stress difference  $(\sigma_1 - \sigma_2)$ at each visible point, based on the stress-optic law \citep{dally1991}.
-Photoelasticity is full-field, non-contact, and non-destructive. 
-These features attract its use in aerospace, biomedical, civil, and manufacturing engineering \citep{ramesh2015,patterson2002}.
+Photoelasticity is a key method for stress analysis. It has been used since the early 1900s.
+Polarized white light passes through a birefringent specimen under load.
+This creates isochromatic fringe patterns on a color camera.
+These patterns display the main stress difference $(\sigma_1 - \sigma_2)$ at each visible point, based on the stress-optic law \cite{dally1991}.
+Photoelasticity is full-field, non-contact, and non-destructive.
+These features attract its use in aerospace, biomedical, civil, and manufacturing engineering \cite{ramesh2015,patterson2002}.
 
-The main task in quantitative digital photoelasticity is to find the isochromatic fringe order N for each pixel. According to the stress-optic law,  $N = hC(\sigma_1 - \sigma_2)/\lambda$, where $h$ is the specimen thickness, $C$ the stress-optic coefficient, and $\lambda$ the wavelength of light \citep{dally1991}. Accurate whole-field $N$ extraction means recovering the full principal stress difference field. This is the main goal of quantitative photoelastic analysis. 
+The main task in quantitative digital photoelasticity is to find the isochromatic fringe order N for each pixel. According to the stress-optic law, $N = hC(\sigma_1 - \sigma_2)/\lambda$, where $h$ is the specimen thickness, $C$ the stress-optic coefficient, and $\lambda$ the wavelength of light \cite{dally1991}. Accurate whole-field $N$ extraction means recovering the full principal stress difference field. This is the main goal of quantitative photoelastic analysis.
 
-Automated demodulation has followed three principal strategies over the past three decades. RGB three-fringe photoelasticity (TFP) was first introduced by Ajovalasit et al.\ \citep{ajovalasit1995} and further developed by Ramesh and his team \citep{ramesh1996,ramesh2011,madhu2007} . It finds  $N$ by comparing the measured RGB triple to a calibration look-up table specific to the material. TFP is simple because it needs just one image. However, it is sensitive to changes in lighting. When N is 3 or more, it can be unclear without extra scanning refinement  \citep{kale2013,ramesh2015}. Phase-shifting methods \citep{wang1995,ramesh1996phaseshifting,siegmann2005} capture several images at set optical retarder steps. This offers precise wholefield demodulation. However, it requires extra hardware and multiple captures, which limits dynamic measurements. Fourier-transform and carrier-frequency methods  \citep{quan1993,morimoto1994} let you demodulate a single image. This happens in the spatial frequency domain. However, they need a minimum carrier fringe density, which limits where they can be used. A comprehensive review of classical approaches is given in \citep{ajovalasit2015,ramesh2021}.
+Automated demodulation has followed three principal strategies over the past three decades. RGB three-fringe photoelasticity (TFP) was first introduced by Ajovalasit et al.\ \cite{ajovalasit1995} and further developed by Ramesh and his team \cite{ramesh1996,ramesh2011,madhu2007}. It finds $N$ by comparing the measured RGB triple to a calibration look-up table specific to the material. TFP is simple because it needs just one image. However, it is sensitive to changes in lighting. When N is 3 or more, it can be unclear without extra scanning refinement \cite{kale2013,ramesh2015}. Phase-shifting methods \cite{wang1995,ramesh1996phaseshifting,siegmann2005} capture several images at set optical retarder steps. This offers precise whole-field demodulation. However, it requires extra hardware and multiple captures, which limits dynamic measurements. Fourier-transform and carrier-frequency methods \cite{quan1993,morimoto1994} let you demodulate a single image. This happens in the spatial frequency domain. However, they need a minimum carrier fringe density, which limits where they can be used. A comprehensive review of classical approaches is given in \cite{ajovalasit2015,ramesh2021}.
 
-The rapid maturation of machine learning (ML) has motivated its application across optical metrology \citep{zhu2022}. Deep convolutional neural networks (CNNs) are used in digital photoelasticity for several tasks. They help with isochromatic fringe pattern segmentation \citep{brinezdeleon2022}. They also recover stress fields from single images \citep{tao2022,naranjo2022} and demodulate whole-field fringe orders \citep{mohan2024}. FringeNet \citep{mohan2024} stands out. It's a cyclic U-Net design. It uses a special loss called Continuity-Imposed Hybrid Cyclic Loss (CHCL). This design leads to a 92.4\% improvement in MSE and a 16.19\% boost in PSNR compared to other methods on the IsochromaticArt benchmark. Briñez-de León et al.\citep{brinezdeleon2024} offer a detailed review of deep learning in digital photoelasticity. They highlight three main challenges: dataset scarcity, interpretability, and generalization.
+The rapid maturation of machine learning (ML) has motivated its application across optical metrology \cite{zhu2022}. Deep convolutional neural networks (CNNs) are used in digital photoelasticity for several tasks. They help with isochromatic fringe pattern segmentation \cite{brinezdeleon2022}. They also recover stress fields from single images \cite{tao2022,naranjo2022} and demodulate whole-field fringe orders \cite{mohan2024}. FringeNet \cite{mohan2024} stands out. It is a cyclic U-Net design. It uses a special loss called Continuity-Imposed Hybrid Cyclic Loss (CHCL). This design leads to a 92.4\% improvement in MSE and a 16.19\% boost in PSNR compared to other methods on the IsochromaticArt benchmark. Bri\~nez-de Le\'{o}n et al.\ \cite{brinezdeleon2024} offer a detailed review of deep learning in digital photoelasticity. They highlight three main challenges: dataset scarcity, interpretability, and generalization.
 
-
-Gradient-boosted decision trees, especially XGBoost, provide a top-notch method for structured tabular regression. This approach is easy to interpret using gain-based feature importance. It is also efficient on GPU hardware, thanks to histogram-based split-finding. XGBoost is used to predict mechanical properties \citep{shi2023} and estimate structural stress \citep{vivekanandan2020}. No one has reported using it for pixel-level photoelastic fringe order demodulation over entire fields. This paper addresses this gap.
-
+Gradient-boosted decision trees, especially XGBoost, provide a top-notch method for structured tabular regression. This approach is easy to interpret using gain-based feature importance. It is also efficient on GPU hardware, thanks to histogram-based split-finding. XGBoost is used to predict mechanical properties \cite{shi2023} and estimate structural stress \cite{vivekanandan2020}. No one has reported using it for pixel-level photoelastic fringe order demodulation over entire fields. This paper addresses this gap.
 
 The specific contributions of this work are:
 
@@ -249,51 +154,44 @@ concludes.
 
 \subsection{Classical Fringe Order Demodulation}
 
+Automated fringe order demodulation in photoelasticity has a history spanning over three decades. Ajovalasit, Barone, and Petrucci \cite{ajovalasit1995} started RGB photoelasticity. They matched one white-light isochromatic image to a color calibration look-up table (LUT). This helped them determine the retardation. Ramesh and Deshmukh \cite{ramesh1996} made three-fringe photoelasticity (TFP). Later, their team added new strategies. These are advancing-front \cite{kale2013} and fringe-resolution-guided \cite{ramesh2015}. They help improve reliable demodulation for higher fringe orders. Ajovalasit, Petrucci, and Scafidi \cite{ajovalasit2015} provide a comprehensive review of RGB photoelasticity. Ramesh et al.\ \cite{ramesh2011} and Madhu and Ramesh \cite{madhu2007} looked into issues with nonuniqueness and color adaptation under various light sources. The software packages PSCOPE\textsuperscript{\textregistered} and DigiTFP\textsuperscript{\textregistered} from IIT Madras combine proven TFP algorithms into one platform \cite{ramesh2015pscope,ramesh2015digitfp}.
 
+Phase-shifting methods offer better accuracy, but they require more acquisitions and extra hardware. Wang and Patterson \cite{wang1995} combined phase-stepping with fuzzy-set processing. Ramesh and Ganapathy \cite{ramesh1996phaseshifting} formalized the methodology using Jones calculus. Siegmann, Backman, and Patterson \cite{siegmann2005} showed a strong method. It focuses on regions to handle complex fringe patterns. This is useful for aerospace samples. Ramji and Ramesh \cite{ramji2010} created an adaptive algorithm. It guides quality in unwrapping isoclinic and isochromatic phasemaps. Phase ambiguity and unwrapping for isochromatic maps are treated in \cite{ramesh2004,ramji2008}.
 
-
-Automated fringe order demodulation in photoelasticity has a history spanning over three decades. Ajovalasit, Barone, and Petrucci \citep{ajovalasit1995} started RGB photoelasticity. They matched one white-light isochromatic image to a color calibration look-up table (LUT). This helped them determine the retardation. Ramesh and Deshmukh \citep{ramesh1996} made three-fringe photoelasticity (TFP). Later, their team added new strategies. These are advancing-front \citep{kale2013}and fringe-resolution-guided  \citep{ramesh2015}. They help improve reliable demodulation for higher fringe orders. Ajovalasit, Petrucci, and Scafidi \citep{ajovalasit2015} provide a comprehensive review of RGB photoelasticity. Ramesh et al. \ \citep{ramesh2011} and Madhu and Ramesh \citep{madhu2007}. looked into issues with nonuniqueness and color adaptation under various light sources. The software packages PSCOPE\textsuperscript{\textregistered} and DigiTFP\textsuperscript{\textregistered} from IIT Madras combine proven TFP algorithms into one platform \citep{ramesh2015pscope,ramesh2015digitfp}.
-
-
-Phase-shifting methods offer better accuracy, but they require more acquisitions and extra hardware. Wang and Patterson \citep{wang1995} combined phase-stepping with fuzzy-set processing. Ramesh and Ganapathy \citep{ramesh1996phaseshifting} formalized the methodology using Jones calculus. Siegmann, Backman, and Patterson \citep{siegmann2005} showed a strong method. It focuses on regions to handle complex fringe patterns. This is useful for aerospace samples. Ramji and Ramesh \citep{ramji2010} created an adaptive algorithm. It guides quality in unwrapping isoclinic and isochromatic phasemaps. Phase ambiguity and unwrapping for isochromatic maps are treated in \citep{ramesh2004,ramji2008}.
-
-
-Fourier-transform and carrier-frequency methods \citep{quan1993,morimoto1994} allow single-image demodulation. They work in the spatial frequency domain. Regularization and color-difference methods \citep{quiroga1997,swain2014} increase TFP to higher fringe orders. However, all classical methods have drawbacks. They are sensitive to illuminants, require material calibration, or are complex to set up.
+Fourier-transform and carrier-frequency methods \cite{quan1993,morimoto1994} allow single-image demodulation. They work in the spatial frequency domain. Regularization and color-difference methods \cite{quiroga1997,swain2014} increase TFP to higher fringe orders. However, all classical methods have drawbacks. They are sensitive to illuminants, require material calibration, or are complex to set up.
 
 \subsection{Machine Learning and Deep Learning in Photoelasticity}
 
+The application of ML to digital photoelasticity has accelerated substantially since 2018. Zhu et al.\ \cite{zhu2022} offer a wide review of deep learning in optical metrology. They discuss interferometry, holography, and photoelasticity. In digital photoelasticity, Tao et al.\ \cite{tao2022} introduced a CNN encoder-decoder. It recovers the principal stress difference map from one isochromatic image. This shows that end-to-end deep learning is feasible. Naranjo and Restrepo-Mart\'{i}nez \cite{naranjo2022} used deep CNNs. They extracted stress fields from multi-polarised photoelasticity images. Bri\~nez-de Le\'{o}n et al.\ \cite{brinezdeleon2024} offer a critical review from 2018 to 2024. They mention three main challenges. First, there is dataset scarcity. Second, interpretability is an issue. Third, generalization in different lighting conditions is a challenge.
 
-The application of ML to digital photoelasticity has accelerated substantially since 2018. Zhu et al.\ \citep{zhu2022}  offer a wide review of deep learning in optical metrology. They discuss interferometry, holography, and photoelasticity. In digital photoelasticity, Tao et al. \ \citep{tao2022} introduced a CNN encoder-decoder. It recovers the principal stress difference map from one isochromatic image. This shows that end-to-end deep learning is feasible. Naranjo and Restrepo-Martínez \citep{naranjo2022}  used deep CNNs. They extracted stress fields from multi-polarised photoelasticity images. Briñez-de León et al.\ \citep{brinezdeleon2024} offer a critical review from 2018 to 2024. They mention three main challenges. First, there is dataset scarcity. Second, interpretability is an issue. Third, generalization in different lighting conditions is a challenge.
+The closest previous work is FringeNet \cite{mohan2024}. It features a cyclic U-Net design. It was trained on the open-source Isochromatic-Art dataset. FringeNet uses a Continuity-Imposed Hybrid Cyclic Loss (CHCL). This combines MSE, SSIM, PSNR, and a spatial continuity penalty. Together, these elements help ensure fringe order smoothness. It shows a 92.4\% boost in MSE and a 16.19\% increase in PSNR compared to other methods on the Isochromatic-Art benchmark. Validation on experimental disc and ring images achieves an average SSIM of 0.85. FringeNet's sin/cos output is similar to the dual-target encoding here. The main difference is that FringeNet uses a U-Net backbone that is aware of spatial context. This work uses hand-crafted neighborhood and texture features. It relies on a gradient-boosted ensemble. This approach allows for clear physical interpretability through gain-based feature importance.
 
-
-The closest previous work is FringeNet \citep{mohan2024}. It features a cyclic U-Net design. It was trained on the open-source Isochromatic-Art dataset. FringeNet uses a Continuity-Imposed Hybrid Cyclic Loss (CHCL). This combines MSE, SSIM, PSNR, and a spatial continuity penalty. Together, these elements help ensure fringe order smoothness. It shows a 92.4\% boost in MSE and a 16.19\% increase in PSNR compared to other methods on the Isochromatic-Art benchmark. Validation on experimental disc and ring images achieves an average SSIM of  0.85. FringeNet’s sin/cos output is similar to the dual-target encoding here. The main difference is that FringeNet uses a U-Net backbone that is aware of spatial context. This work uses hand-crafted neighborhood and texture features. It relies on a gradient-boosted ensemble. This approach allows for clear physical interpretability through gain-based feature importance. 
-
-
-Beyond photoelasticity, gradient-boosted methods have achieved state-of-the-art performance on structured engineering regression tasks. Shi et al.\ \citep{shi2023} showed that XGBoost can predict stress in lattice structures with defects. They achieved an R2 value greater than 0.95. Gradient-boosted trees are generally better than deep networks for tabular data. This is well known \citep{chen2016,prokhorenkova2018} . The authors think this is the first use of XGBoost with trigonometric target encoding. It applies to whole-field photoelastic fringe order demodulation. 
+Beyond photoelasticity, gradient-boosted methods have achieved state-of-the-art performance on structured engineering regression tasks. Shi et al.\ \cite{shi2023} showed that XGBoost can predict stress in lattice structures with defects. They achieved an $R^2$ value greater than 0.95. Gradient-boosted trees are generally better than deep networks for tabular data. This is well known \cite{chen2016,prokhorenkova2018}. The authors think this is the first use of XGBoost with trigonometric target encoding. It applies to whole-field photoelastic fringe order demodulation.
 
 \subsection{Synthetic Data and Augmentation in Photoelasticity}
 
-Dataset scarcity is the principal bottleneck for supervised learning in photoelasticity \citep{brinezdeleon2024}. Physics-based simulation provides a principled route to large annotated datasets. The Isochromatic-Art dataset \citep{mohan2024} has over 100,000 synthetic isochromatic image pairs. This is great for researchers. This work builds on earlier studies by altering the specimen shape and lighting setup. We look at three analytical solutions. For each shape-load pair, there are ten conditions. We use five illuminants and two sensor profiles. This creates a training distribution with a wider variety of lighting. Data augmentation using geometric transforms is common in computer vision \citep{shorten2019} . However, in photoelasticity, there’s an important extra rule. The BMP image and its ground-truth FRN map must get the same spatial transform. This keeps the pixel-to-fringe-order correspondence intact. Such a rule isn’t needed in standard image classification tasks.
+Dataset scarcity is the principal bottleneck for supervised learning in photoelasticity \cite{brinezdeleon2024}. Physics-based simulation provides a principled route to large annotated datasets. The Isochromatic-Art dataset \cite{mohan2024} has over 100,000 synthetic isochromatic image pairs. This is great for researchers. This work builds on earlier studies by altering the specimen shape and lighting setup. We look at three analytical solutions. For each shape-load pair, there are ten conditions. We use five illuminants and two sensor profiles. This creates a training distribution with a wider variety of lighting. Data augmentation using geometric transforms is common in computer vision \cite{shorten2019}. However, in photoelasticity, there is an important extra rule. The BMP image and its ground-truth FRN map must get the same spatial transform. This keeps the pixel-to-fringe-order correspondence intact. Such a rule is not needed in standard image classification tasks.
+
 % ===========================================================
 \section{Methodology}
 \label{sec:methodology}
 
 The complete pipeline, shown in Fig.~\ref{fig:pipeline}, comprises four stages:
 (i) synthetic fringe image generation, (ii) real image augmentation,
-(iii) pixel-level feature extraction, and (iv) dual XGBoost model training.
+(iii) pixel level feature extraction, and (iv) dual XGBoost model training.
 It is essential to understand the role of physical quantities in this
 pipeline: applied loads and stress solutions appear \emph{only} in Stage~(i)
-to produce image--ground-truth pairs. From Stage~(ii) onward, the pipeline
+to produce image ground truth pairs. From Stage~(ii) onward, the pipeline
 operates exclusively on pixel-level RGB data and its derived features. The
 trained model therefore has no dependence on load, specimen geometry, or
 material constants at inference time.
-   
+
 \begin{figure}[htbp]
   \centering
   \includegraphics[width=0.96\linewidth]{Fig1_pipeline}
   \caption{Overview of the proposed whole-field fringe order demodulation
     pipeline. Synthetic and augmented real image pairs are processed into a
-    unified pixel-level dataset, which trains dual XGBoost regressors.
+    unified pixel level dataset, which trains dual XGBoost regressors.
     The fractional fringe order $\hat{N}$ is recovered at every pixel via
     $\mathrm{arctan2}$ from the RGB image alone.}
   \label{fig:pipeline}
@@ -303,7 +201,7 @@ material constants at inference time.
 \label{sec:theory}
 
 In a dark-field circular polariscope, the isochromatic fringe pattern is
-formed free from isoclinic contamination \citep{dally1991,ramesh2000}. For
+formed free from isoclinic contamination \cite{dally1991,ramesh2000}. For
 a birefringent specimen of thickness $h$ and stress-optic coefficient $C$,
 the optical retardation introduced at wavelength $\lambda$ by principal
 stresses $\sigma_1$ and $\sigma_2$ is:
@@ -336,7 +234,7 @@ response in channel $c$ is:
 Equation~\eqref{eq:camera} establishes the physical basis for using the RGB
 image alone to infer fringe order. The resulting $(R,G,B)$ triplet is
 non-unique for $N \gtrsim 3$ under most broadband illuminants
-\citep{ajovalasit2015}, motivating training across multiple spectral
+\cite{ajovalasit2015}, motivating training across multiple spectral
 conditions (Section~\ref{sec:spectral}). Only the fractional part
 $N \bmod 1 \in [0,1)$ is predicted; integer $N$ recovery requires a
 subsequent unwrapping step not addressed here.
@@ -359,7 +257,7 @@ load produces denser fringes and a wider range of $N$ values across the
 image. Their sole role is to populate the training distribution with images
 spanning a broad range of fringe densities and colour combinations. This
 approach follows the synthetic-data strategy established in
-\citep{mohan2024,brinezdeleon2024}. For each geometry--spectral combination,
+\cite{mohan2024,brinezdeleon2024}. For each geometry--spectral combination,
 two files are produced: an 8-bit RGB BMP image ($602 \times 461$ pixels,
 0.5~mm/pixel) and a tab-separated fringe-order ground-truth map
 (\texttt{.frn}).
@@ -378,7 +276,7 @@ were used during dataset generation to produce images with varying fringe
 densities.
 
 \paragraph{Plate with circular hole under uniaxial tension.}
-Kirsch solution \citep{kirsch1898} for an infinite plate with hole radius
+Kirsch solution \cite{kirsch1898} for an infinite plate with hole radius
 $a = 25$~mm under far-field stress $\sigma_\infty$:
 \begin{align}
   \sigma_r    &= \frac{\sigma_\infty}{2}\!\left(1-\frac{a^2}{r^2}\right)
@@ -394,7 +292,7 @@ Six far-field stress values $\sigma_\infty \in \{0.5, 1.0, 1.5, 2.0, 2.5,
 3.0\}$~MPa were used as data-generation parameters.
 
 \paragraph{Diametrally loaded disc.}
-Timoshenko and Goodier \citep{timoshenko1970} solution for a disc of radius
+Timoshenko and Goodier \cite{timoshenko1970} solution for a disc of radius
 $R = 30$~mm and thickness $t = 6$~mm under load $P$:
 \begin{align}
   \sigma_x &= -\frac{2P}{\pi t}\!\left[\frac{s\,x^2}{a^2}
@@ -424,7 +322,7 @@ fringe-order map is stored as a single-precision \texttt{float32}
 \texttt{.frn} file. Rendering across ten spectral conditions de-correlates
 the training distribution from any single illuminant--sensor pair,
 producing a model robust to illumination variation
-\citep{ajovalasit2015,madhu2007b}.
+\cite{ajovalasit2015,madhu2007b}.
 
 \begin{table}[htbp]
   \centering
@@ -509,7 +407,7 @@ the identical \texttt{AffineTransform} object (\texttt{skimage.transform})
 is applied via bilinear interpolation to both the BMP and its paired
 FRN---preserving pixel-to-fringe-order correspondence exactly. No colour
 transforms are applied, as colour is the primary fringe-order information
-carrier \citep{ajovalasit2015,shorten2019}.
+carrier \cite{ajovalasit2015,shorten2019}.
 
 \begin{table}[htbp]
   \centering
@@ -541,13 +439,13 @@ local context and noise robustness; (iii) texture and edge responses from
 gradient, Laplacian, and Gabor filters, encoding fringe orientation, density,
 and boundary sharpness.
 
-Gabor filters \citep{daugman1985} provide optimal joint localisation in
+Gabor filters \cite{daugman1985} provide optimal joint localisation in
 spatial frequency and orientation, and have been validated as effective
-descriptors for photoelastic fringe pattern recognition \citep{fandino2018}.
+descriptors for photoelastic fringe pattern recognition \cite{fandino2018}.
 Four orientations $(0^\circ, 45^\circ, 90^\circ, 135^\circ)$ provide
 complete orientation coverage; two spatial scales ($f_1$, $f_2$) address
 the range of fringe densities across the training set. The bilateral filter
-\citep{tomasi1998} is applied with $\sigma_s = 5$~px and $\sigma_r = 25$
+\cite{tomasi1998} is applied with $\sigma_s = 5$~px and $\sigma_r = 25$
 intensity units.
 
 \begin{table}[htbp]
@@ -573,7 +471,7 @@ intensity units.
       & 3 & Noise-robust local colour average \\
     Bilateral filter response
       & $R_\mathrm{bilat}$, $G_\mathrm{bilat}$, $B_\mathrm{bilat}$
-      & 3 & Edge-preserving local smoothing \citep{tomasi1998} \\
+      & 3 & Edge-preserving local smoothing \cite{tomasi1998} \\
     Local colour range
       & $R_\mathrm{range}$, $G_\mathrm{range}$, $B_\mathrm{range}$
       & 3 & Max$-$min over $3\times3$ window; high at fringe boundaries \\
@@ -585,10 +483,10 @@ intensity units.
       & 2 & Second-order edge detector \\
     Gabor bank (scale 1)
       & Gabor $0^\circ$, $45^\circ$, $90^\circ$, $135^\circ$
-      & 4 & Orientation-selective texture \citep{daugman1985,fandino2018} \\
+      & 4 & Orientation-selective texture \cite{daugman1985,fandino2018} \\
     Gabor bank (scale 2)
       & Gabor2 $0^\circ$, $45^\circ$, $90^\circ$, $135^\circ$
-      & 4 & Orientation-selective texture \citep{daugman1985,fandino2018} \\
+      & 4 & Orientation-selective texture \cite{daugman1985,fandino2018} \\
     \midrule
     Total & --- & 27 & --- \\
     \bottomrule
@@ -602,7 +500,7 @@ Direct scalar regression of $N$ introduces a circular discontinuity at
 integer fringe orders: pixels at $N = 0.01$ and $N = 0.99$ are physically
 adjacent but separated by 0.98 in scalar space, producing characteristic
 spike artefacts in the predicted $N$ map at $N \in \mathbb{Z}$
-\citep{zuo2018,ramesh2008}. The solution \citep{mardia2000} is to encode
+\cite{zuo2018,ramesh2008}. The solution \cite{mardia2000} is to encode
 $N$ as a pair of bounded, globally-smooth targets:
 \begin{equation}
   y_\mathrm{sin} = \sin(2\pi N), \qquad y_\mathrm{cos} = \cos(2\pi N)
@@ -626,7 +524,7 @@ A per-pixel prediction quality metric is defined as:
   \label{eq:confidence}
 \end{equation}
 where $\varepsilon \approx 0$ indicates high confidence. This metric can
-seed a quality-guided phase-unwrapping step \citep{ramesh2004,ramji2008} to
+seed a quality-guided phase-unwrapping step \cite{ramesh2004,ramji2008} to
 recover the absolute (integer) fringe order.
 
 \subsection{XGBoost Model Architecture and Training}
@@ -634,14 +532,14 @@ recover the absolute (integer) fringe order.
 
 \subsubsection{Algorithm overview}
 
-XGBoost \citep{chen2016} builds an additive ensemble of shallow decision
+XGBoost \cite{chen2016} builds an additive ensemble of shallow decision
 trees by iteratively fitting each new tree to the negative gradient of the
 loss function, employing second-order Taylor expansion, built-in $L_1$ and
 $L_2$ regularisation, per-round row and column subsampling, and
 histogram-based split-finding with GPU acceleration via CUDA. XGBoost was
 selected for three reasons: the 27-dimensional hand-crafted image feature
 vector is a structured tabular input for which gradient-boosted trees
-achieve state-of-the-art performance \citep{chen2016,prokhorenkova2018};
+achieve state-of-the-art performance \cite{chen2016,prokhorenkova2018};
 gain-based feature importance provides direct physical interpretability; and
 GPU-accelerated training handles the ${>}70$~GB dataset without distributed
 infrastructure.
@@ -668,7 +566,7 @@ in Table~\ref{tab:hyperparams}, chosen via preliminary experiments on a
     \texttt{learning\_rate} ($\eta$) & 0.03
       & Conservative with $\le 5{,}000$ rounds; avoids overshooting \\
     \texttt{subsample}          & 0.8
-      & Row dropout per tree \citep{chen2016} \\
+      & Row dropout per tree \cite{chen2016} \\
     \texttt{colsample\_bytree}  & 0.8
       & Each tree sees $\sim$22 of 27 features on average \\
     \texttt{reg\_alpha} ($L_1$) & 0.2
@@ -728,7 +626,7 @@ fringe order corresponds to $\approx 2.015$~MPa.
 Real experimental fringe images were acquired using a white-light
 transmission circular polariscope. The optical configuration comprised two
 linear polarisers and two quarter-wave plates in the standard dark-field
-circular arrangement \citep{dally1991,ramesh2000}. The light source was a
+circular arrangement \cite{dally1991,ramesh2000}. The light source was a
 broadband white-LED panel. Images were captured with a colour digital camera
 at $602 \times 461$ pixels, 8-bit RGB, at a pixel scale of 0.5~mm/pixel.
 
@@ -987,9 +885,9 @@ corresponds to a principal stress difference uncertainty of approximately
 0.224~MPa (Eq.~\ref{eq:stress_uncertainty}, $h=6$~mm,
 $C=4.55\times10^{-11}$~m$^2$/N). For context, TFP with advancing-front
 refinement achieves RMSE~$\approx 0.02$--$0.05$ fringe orders in
-well-resolved regions \citep{madhu2007,kale2013}, and phase-stepping methods
+well-resolved regions \cite{madhu2007,kale2013}, and phase-stepping methods
 achieve sub-0.01 fringe orders under controlled conditions
-\citep{wang1995,siegmann2005}. The present ML approach falls between standard
+\cite{wang1995,siegmann2005}. The present ML approach falls between standard
 TFP and scanning-refined TFP accuracy in smooth fringe regions. The reported
 metrics are conservative lower bounds, as training had not yet converged at
 the 5{,}000-round budget (Section~\ref{sec:convergence}).
@@ -998,7 +896,7 @@ The sin/cos encoding (Eqs.~\eqref{eq:encoding}--\eqref{eq:recovery})
 completely eliminated the integer wrap-around artefacts observed in
 preliminary scalar regression experiments, confirming resolution of the
 circular discontinuity without a spatial continuity penalty in the loss
-function \citep{mohan2024,ramesh2008}. The quality metric $\varepsilon$
+function \cite{mohan2024,ramesh2008}. The quality metric $\varepsilon$
 provides a natural per-pixel uncertainty estimate without additional
 computation.
 
@@ -1029,7 +927,7 @@ boundary due to steep fringe gradients. Second, the ring geometry---with its
 concentric high-gradient annular fringe bands---differs substantially from
 any geometry in the synthetic training set, limiting the representativeness
 of learned boundary features. Integration with quality-guided phase
-unwrapping \citep{ramji2010,ramesh2004}, using the $\varepsilon$ confidence
+unwrapping \cite{ramji2010,ramesh2004}, using the $\varepsilon$ confidence
 metric to down-weight boundary pixels, is anticipated to substantially
 reduce this error.
 
@@ -1040,10 +938,10 @@ representative demodulation approaches. The proposed method requires no
 material-specific calibration specimen or LUT, no motorised retarder, and
 only a single image. It provides direct physical interpretability through
 gain-based feature importance, which distinguishes it from deep learning
-approaches such as FringeNet \citep{mohan2024} where saliency maps are
+approaches such as FringeNet \cite{mohan2024} where saliency maps are
 required as a post-hoc approximation. A quantitative comparison with
 FringeNet on a common benchmark dataset is not presented here because the
-Isochromatic-Art dataset \citep{mohan2024} employs a different specimen
+Isochromatic-Art dataset \cite{mohan2024} employs a different specimen
 set, spectral rendering pipeline, and evaluation protocol from the present
 work; such a comparison on a unified benchmark is identified as important
 future work.
@@ -1096,9 +994,9 @@ orders and SSIM~$= 0.9670$.
 
 Four limitations should be noted. First, the model predicts fractional
 fringe order only; integer-order recovery requires a phase-unwrapping step
-\citep{ramesh2004,ramji2008}. Second, the pixel-wise model imposes no
+\cite{ramesh2004,ramji2008}. Second, the pixel-wise model imposes no
 spatial continuity across predictions; CNN or CRF post-processing is
-expected to reduce boundary errors \citep{mohan2024,brinezdeleon2024}.
+expected to reduce boundary errors \cite{mohan2024,brinezdeleon2024}.
 Third, the synthetic training set covers three analytical geometries;
 specimens with complex three-dimensional stress states or FEM-required
 boundary conditions were not included. Fourth, both models reached the
@@ -1110,11 +1008,11 @@ improve performance.
 
 Future directions include: (i) extended training beyond 5{,}000 rounds to
 reach full convergence; (ii) integration with quality-guided phase-unwrapping
-\citep{ramji2010,ramesh2004} using the $\varepsilon$ confidence map;
+\cite{ramji2010,ramesh2004} using the $\varepsilon$ confidence map;
 (iii) FEM-based synthetic data generation for complex geometries;
 (iv) domain adaptation for improved illumination robustness
-\citep{brinezdeleon2024}; (v) evaluation on the Isochromatic-Art benchmark
-\citep{mohan2024} for a direct comparison with FringeNet; and (vi) ablation
+\cite{brinezdeleon2024}; (v) evaluation on the Isochromatic-Art benchmark
+\cite{mohan2024} for a direct comparison with FringeNet; and (vi) ablation
 studies quantifying the contribution of individual feature groups and the
 sin/cos encoding.
 
@@ -1182,7 +1080,7 @@ experimental image dataset will be made available upon reasonable request
 to the corresponding author.
 
 % ===========================================================
-\bibliographystyle{unsrtnat}
+\bibliographystyle{elsarticle-num}
 \bibliography{references}
 
 % ===========================================================
