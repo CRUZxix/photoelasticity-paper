@@ -557,11 +557,11 @@ in Table~\ref{tab:hyperparams}, chosen via preliminary experiments on a
   \caption{XGBoost hyperparameters used identically for sin-model and cos-model.}
   \label{tab:hyperparams}
   \footnotesize
-  \begin{tabular}{@{}L{3.2cm}L{2.3cm}L{7.8cm}@{}}
+  \begin{tabular}{@{}L{3.3cm}L{2.8cm}L{7.8cm}@{}}
     \toprule
     Hyperparameter & Value & Rationale \\
     \midrule
-    \texttt{objective}          & \texttt{reg:squarederror}
+    \texttt{objective}          &\texttt{reg:squarederror}
       & MSE loss; targets in $[-1,+1]$ are continuous and bounded \\
     \texttt{max\_depth}         & 7
       & Sufficient for 27-feature interactions \\
@@ -855,8 +855,9 @@ Table~\ref{tab:comparison} places the proposed method alongside representative d
   \caption{Comparison of fringe order demodulation methods. Calibration
     refers to a material-specific LUT or calibration specimen.}
   \label{tab:comparison}
-  \footnotesize
-  \begin{tabular}{@{}lccccL{2.2cm}l@{}}
+  \footnotesize 
+  \resizebox{\linewidth}{!}{ % <-- ADD THIS
+  \begin{tabular}{@{}lccccL{2.5cm}l@{}}
     \toprule
     Method & Images & Extra HW & Calibration & Interpretable & Approx.\ RMSE & Ref. \\
     \midrule
@@ -874,6 +875,7 @@ Table~\ref{tab:comparison} places the proposed method alongside representative d
       & 0.11 (conservative)  & This work \\
     \bottomrule
   \end{tabular}
+  }
   \vspace{2pt}\\
   \footnotesize $^\dagger$ FringeNet results are reported on the
   Isochromatic-Art benchmark using a different specimen set and evaluation
