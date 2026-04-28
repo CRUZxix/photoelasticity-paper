@@ -41,7 +41,7 @@
              country={Country}}
 
 \begin{abstract}
-Digital photoelasticity is a well-established full-field optical technique
+Digital photoelasticity is a hi well-established full-field optical technique
 for experimental stress analysis of engineering components. The reliable
 determination of the isochromatic fringe order $N$ across the entire field
 of view---whole-field fringe order demodulation---remains a central
@@ -249,19 +249,9 @@ outputs $\hat{N}$ directly.
 \subsection{Synthetic Dataset Generation}
 \label{sec:synthetic}
 
-A large physics-based synthetic dataset was generated using closed-form
-analytical stress solutions for three specimen geometries, implemented in
-\texttt{generate\_dataset.py}. Applied loads appear in this stage as
-parameters that control the fringe density of the rendered image: a higher
-load produces denser fringes and a wider range of $N$ values across the
-image. Their sole role is to populate the training distribution with images
-spanning a broad range of fringe densities and colour combinations. This
-approach follows the synthetic-data strategy established in
-\cite{mohan2024,brinezdeleon2024}. For each geometry--spectral combination,
-two files are produced: an 8-bit RGB BMP image ($602 \times 461$ pixels,
-0.5~mm/pixel) and a tab-separated fringe-order ground-truth map
-(\texttt{.frn}).
 
+A large physics-based synthetic dataset was created. It used closed-form analytical stress solutions for three specimen shapes. This was done in\texttt{generate\_dataset.py}. Applied loads in this stage control the fringe density of the image. A higher load means denser fringes and a broader range of N values. Their main job is to fill the training distribution with images. These images should cover a wide variety of fringe densities and color combinations. This approach follows the synthetic-data strategy established i n\cite{mohan2024,brinezdeleon2024}. For each geometry-spectral combo, we create two files. One is an 8-bit RGB BMP image. It measures ($602 \times 461$ pixels,
+0.5~mm/pixel). The other file is a tab-separated fringe-order ground-truth map (\texttt{.frn}).
 \subsubsection{Specimen geometries}
 
 \paragraph{Beam under pure bending.}
@@ -310,19 +300,7 @@ parameters.
 \subsubsection{Spectral conditions}
 \label{sec:spectral}
 
-Each geometry is rendered under all $N_\mathrm{spec} = 10$ spectral
-conditions formed by five illuminant SPDs $\times$ two RGB sensor
-sensitivities (Table~\ref{tab:spectral}). The spectral axis spans
-$\lambda \in [390, 760]$~nm at 371 uniformly spaced wavelength steps. The
-spectral integration of Eq.~\eqref{eq:camera} is evaluated numerically
-(trapezoidal rule) using vectorised GPU array operations (CuPy/CUDA,
-fallback to NumPy). The resulting RGB image is per-channel min-max
-normalised to $[0,255]$ and saved as an 8-bit BMP. The ground-truth
-fringe-order map is stored as a single-precision \texttt{float32}
-\texttt{.frn} file. Rendering across ten spectral conditions de-correlates
-the training distribution from any single illuminant--sensor pair,
-producing a model robust to illumination variation
-\cite{ajovalasit2015,madhu2007b}.
+Each geometry is shown under  $N_\mathrm{spec} = 10$ spectral conditions. This includes five illuminant SPDs and two RGB sensor sensitivities (Table~\ref{tab:spectral}). The spectral axis spans $\lambda \in [390, 760]$~nm  at 371 uniformly spaced wavelength steps. The spectral integration ofEq. ~\eqref{eq:camera} is calculated numerically. We use the trapezoidal rule with CuPy/CUDA for GPU array operations. If needed, we fall back to NumPy. The resulting RGB image is per-channel min-max normalised to $[0,255]$ and saved as an 8-bit BMP. The ground-truth fringe-order map is stored as a single-precision float32 .frn file. Rendering under ten spectral conditions mixes up the training data from any one illuminant-sensor pair. This makes the model strong against changes in lighting\cite{ajovalasit2015,madhu2007b}.
 
 \begin{table}[htbp]
   \centering
@@ -396,19 +374,11 @@ producing a model robust to illumination variation
 \subsection{Real Image Augmentation}
 \label{sec:augmentation}
 
-Real experimental fringe images were acquired with a white-light
-transmission circular polariscope (Section~\ref{sec:experiment}). Each
-image is paired with a ground-truth \texttt{.frn} map obtained by
-phase-stepping. The augmentation pipeline (\texttt{augmentation.py})
-generates 25 new BMP--FRN pairs per original by randomly composing three
-spatial transforms: isotropic scaling, biaxial shearing, and random
-cropping (Table~\ref{tab:augmentation}). The critical constraint is that
-the identical \texttt{AffineTransform} object (\texttt{skimage.transform})
-is applied via bilinear interpolation to both the BMP and its paired
-FRN---preserving pixel-to-fringe-order correspondence exactly. No colour
-transforms are applied, as colour is the primary fringe-order information
-carrier \cite{ajovalasit2015,shorten2019}.
+Real fringe images were captured using a white-light transmission circular polariscope (Section~\ref{sec:experiment}). Each image is paired with a ground-truth .frn map obtained by phase-stepping. The augmentation pipeline (augmentation.py) creates 25 new BMP–FRN pairs for each original. 
 
+It does this by randomly using three spatial transforms: isotropic scaling, biaxial shearing, and random cropping  (Table~\ref{tab:augmentation}).
+
+The main point is that the same AffineTransform object (skimage.transform) uses bilinear interpolation. This applies to both the BMP and the linked FRN. This keeps the pixel-to-fringe-order match exact. No color transforms are used. Color is the main carrier of fringe-order information  \cite{ajovalasit2015,shorten2019}.
 \begin{table}[htbp]
   \centering
   \caption{Augmentation parameter ranges. Identical transform applied to BMP and \texttt{.frn}.}
@@ -429,24 +399,21 @@ carrier \cite{ajovalasit2015,shorten2019}.
 \subsection{Feature Extraction}
 \label{sec:features}
 
-A 27-dimensional pixel-level feature vector is computed for each pixel from
-local RGB information (Table~\ref{tab:features}). All 27 features are
-derived exclusively from the RGB image; no load, geometry, or material
-parameter enters the feature vector. The descriptor captures three classes
-of information: (i) absolute colour, encoding fractional fringe order
-through Eq.~\eqref{eq:camera}; (ii) neighbourhood statistics, providing
-local context and noise robustness; (iii) texture and edge responses from
-gradient, Laplacian, and Gabor filters, encoding fringe orientation, density,
-and boundary sharpness.
+A 27-dimensional feature vector is calculated for each pixel using local RGB data (Table~\ref{tab:features}). All 27 features come only from the RGB image. No load, geometry, or material parameters are part of the feature vector. 
 
-Gabor filters \cite{daugman1985} provide optimal joint localisation in
-spatial frequency and orientation, and have been validated as effective
-descriptors for photoelastic fringe pattern recognition \cite{fandino2018}.
-Four orientations $(0^\circ, 45^\circ, 90^\circ, 135^\circ)$ provide
-complete orientation coverage; two spatial scales ($f_1$, $f_2$) address
-the range of fringe densities across the training set. The bilateral filter
-\cite{tomasi1998} is applied with $\sigma_s = 5$~px and $\sigma_r = 25$
+The descriptor includes three types of information:
+
+(i) Absolute color shows fractional fringe order with ~\eqref{eq:camera}. 
+
+(ii) Neighborhood statistics give local context and cut down noise. 
+
+(iii) Texture and edge responses come from gradient, Laplacian, and Gabor filters. They show fringe orientation, density, and how sharp boundaries are.
+
+ 
+
+Gabor filters \cite{daugman1985} help localize both spatial frequency and orientation well. They are proven to be effective for recognizing photoelastic fringe patterns \cite{fandino2018}. Four orientations $(0^\circ, 45^\circ, 90^\circ, 135^\circ)$ cover all angles. Two spatial scales (f1, f2) handle different fringe densities in the training set. The bilateral filter \cite{tomasi1998}  is applied with$\sigma_s = 5$~px and $\sigma_r = 25$
 intensity units.
+
 
 \begin{table}[htbp]
   \centering
@@ -496,19 +463,15 @@ intensity units.
 \subsection{Sin/Cos Dual-Target Encoding}
 \label{sec:sincos}
 
-Direct scalar regression of $N$ introduces a circular discontinuity at
-integer fringe orders: pixels at $N = 0.01$ and $N = 0.99$ are physically
-adjacent but separated by 0.98 in scalar space, producing characteristic
-spike artefacts in the predicted $N$ map at $N \in \mathbb{Z}$
-\cite{zuo2018,ramesh2008}. The solution \cite{mardia2000} is to encode
-$N$ as a pair of bounded, globally-smooth targets:
+
+Direct scalar regression of $N$ creates a circular gap at integer fringe orders. For example, pixels at $N = 0.01$ and $N = 0.99$ are next to each other, but they are $0.98$ apart in scalar space. This leads to spike artifacts in the predicted $N$ map at integer values of $N$ \cite{zuo2018,ramesh2008}. The solution \cite{mardia2000} is to encode $N$ as a pair of bounded, globally smooth targets:
 \begin{equation}
   y_\mathrm{sin} = \sin(2\pi N), \qquad y_\mathrm{cos} = \cos(2\pi N)
   \label{eq:encoding}
 \end{equation}
 
-Two independent XGBoost regressors---the \emph{sin-model} and the
-\emph{cos-model}---are trained to predict $y_\mathrm{sin}$ and
+Two independent XGBoost regressors-the \emph{sin-model} and the
+\emph{cos-model} are trained to predict $y_\mathrm{sin}$ and
 $y_\mathrm{cos}$ respectively. At inference, the fractional fringe order is
 recovered via the four-quadrant arctangent:
 \begin{equation}
@@ -532,17 +495,14 @@ recover the absolute (integer) fringe order.
 
 \subsubsection{Algorithm overview}
 
-XGBoost \cite{chen2016} builds an additive ensemble of shallow decision
-trees by iteratively fitting each new tree to the negative gradient of the
-loss function, employing second-order Taylor expansion, built-in $L_1$ and
-$L_2$ regularisation, per-round row and column subsampling, and
-histogram-based split-finding with GPU acceleration via CUDA. XGBoost was
-selected for three reasons: the 27-dimensional hand-crafted image feature
-vector is a structured tabular input for which gradient-boosted trees
-achieve state-of-the-art performance \cite{chen2016,prokhorenkova2018};
-gain-based feature importance provides direct physical interpretability; and
-GPU-accelerated training handles the ${>}70$~GB dataset without distributed
-infrastructure.
+XGBoost \cite{chen2016} creates an additive ensemble of shallow decision trees by fitting each new tree to the negative gradient of the loss function using a second-order Taylor expansion. It incorporates $L_1$ and $L_2$ regularisation, row and column subsampling, histogram-based split-finding, and GPU acceleration via CUDA.
+
+XGBoost was chosen for three main reasons:
+\begin{itemize}
+    \item The $27$-dimensional image feature vector is a structured tabular input for which gradient-boosted trees achieve state-of-the-art performance \cite{chen2016,prokhorenkova2018}.
+    \item Gain-based feature importance provides clear physical interpretability.
+    \item GPU-accelerated training can handle the ${>}70$~GB dataset without requiring distributed infrastructure.
+\end{itemize}
 
 \subsubsection{Hyperparameters}
 
@@ -586,13 +546,7 @@ in Table~\ref{tab:hyperparams}, chosen via preliminary experiments on a
 
 \subsubsection{Chunked training and train/test split}
 
-The combined feature CSV exceeds 70~GB, precluding full in-memory loading.
-The CSV is read in sequential chunks of 500,000 rows; every fifth chunk is
-reserved for the test set (${\approx}20\%$), the remainder for training
-(${\approx}80\%$). After the single-pass read, all training chunks are
-concatenated into an \texttt{xgb.DMatrix} object and \texttt{model.train()}
-is called once. Both Booster objects are serialised together as a single
-\texttt{joblib} \texttt{.pkl} bundle for deployment.
+The combined feature CSV exceeds $70$~GB, precluding full in-memory loading. The CSV is read in chunks of $500{,}000$ rows. Every fifth chunk is assigned to the test set (${\approx}20\%$), while the remainder is used for training (${\approx}80\%$). After the single-pass read, all training chunks are combined into an \texttt{xgb.DMatrix} object, and \texttt{model.train()} is called. Both Booster objects are saved together as a single \texttt{joblib} \texttt{.pkl} bundle for deployment.
 
 \subsection{Evaluation Metrics}
 \label{sec:metrics}
@@ -623,24 +577,11 @@ fringe order corresponds to $\approx 2.015$~MPa.
 \section{Experimental Programme}
 \label{sec:experiment}
 
-Real experimental fringe images were acquired using a white-light
-transmission circular polariscope. The optical configuration comprised two
-linear polarisers and two quarter-wave plates in the standard dark-field
-circular arrangement \cite{dally1991,ramesh2000}. The light source was a
-broadband white-LED panel. Images were captured with a colour digital camera
-at $602 \times 461$ pixels, 8-bit RGB, at a pixel scale of 0.5~mm/pixel.
+Real experimental fringe images were acquired using a white-light transmission circular polariscope. The setup consisted of two linear polarisers and two quarter-wave plates arranged in a standard dark-field circular configuration \cite{dally1991,ramesh2000}. The light source was a broadband white-LED panel. Images were captured with a colour digital camera at $602 \times 461$ pixels, 8-bit RGB, with a pixel scale of $0.5$~mm/pixel.
 
-Specimens were fabricated from PSM-1 photoelastic material with stress-optic
-coefficient $C = 4.55 \times 10^{-11}$~m$^2$/N and uniform thickness
-$h = 6$~mm. Two specimen types were used for validation: ring specimens
-and disc specimens (radius $R = 30$~mm). Neither geometry appears in the
-synthetic training set, confirming that validation is conducted on unseen
-geometry types.
+Specimens were fabricated from PSM-1 photoelastic material with a stress-optic coefficient of $C = 4.55 \times 10^{-11}$~m$^2$/N and a uniform thickness of $h = 6$~mm. Two specimen types were used for validation: ring specimens and disc specimens (radius $R = 30$~mm). Neither geometry appears in the synthetic training set, confirming that validation is conducted on unseen geometry types.
 
-Ground-truth fringe-order maps were obtained by phase-stepping (six-step,
-$30^\circ$ per step). The resulting $N$ maps were saved as \texttt{.frn}
-files in the same format as the synthetic ground truth.
-
+Ground-truth fringe-order maps were obtained using phase-stepping (six steps, $30^\circ$ per step). The resulting $N$ maps were saved as \texttt{.frn} files in the same format as the synthetic ground truth.
 \begin{figure}[htbp]
   \centering
   \includegraphics[width=0.72\linewidth]{Fig7_experimental_setup}
@@ -651,10 +592,7 @@ files in the same format as the synthetic ground truth.
 \subsection{Image Preprocessing and Normalisation}
 \label{sec:preprocessing}
 
-Before feature extraction, each experimental image undergoes foreground
-masking and intensity normalisation using intensity thresholding and
-morphological erosion; the inner hole and outer background are correctly
-excluded from all evaluation metrics.
+Before feature extraction, we mask and normalize each image. We use intensity thresholding and morphological erosion. This removes the inner hole and outer background from the evaluation metrics.
 
 % ===========================================================
 \section{Results}
@@ -690,16 +628,7 @@ breakdown.
 \subsection{Training Convergence}
 \label{sec:convergence}
 
-Both models converged smoothly and training RMSE continued to decrease
-throughout the 5{,}000-round budget, with neither model triggering early
-stopping. This indicates that the models had not yet reached their
-performance ceiling at the 5{,}000-round limit, and reported metrics should
-therefore be understood as a conservative estimate of the method's
-achievable accuracy. Increasing the round budget is expected to yield
-further improvement and is identified as a priority for future work. The
-absence of over-fitting---the test RMSE closely tracks the training RMSE
-throughout---confirms that regularisation is effective across the full
-70~GB dataset.
+Both models trained smoothly. The training RMSE continued to decrease over the $5{,}000$ rounds, and neither model triggered early stopping. This indicates that the models had not yet reached their performance ceiling at the $5{,}000$-round limit. Therefore, the reported metrics represent a conservative estimate of the method's achievable accuracy. Increasing the round budget is expected to yield further improvement and is identified as a priority for future work. The absence of over-fitting---evidenced by the close agreement between test and training RMSE---confirms that regularisation is effective across the full $70$~GB dataset.
 
 \begin{figure}[htbp]
   \centering
