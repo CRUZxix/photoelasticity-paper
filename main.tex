@@ -352,6 +352,7 @@ Representative sensor spectral sensitivities and illuminant spectral power distr
     (5 illuminants $\times$ 2 sensors $= 10$ conditions per geometry).}
   \label{tab:spectral}
   \footnotesize
+  \resizebox{\linewidth}{!}{
   \begin{tabular}{@{}p{1.2cm}p{4.2cm}p{3.5cm}p{4.5cm}@{}}
     \toprule
     ID    & Illuminant SPD $S(\lambda)$          & Sensor $r_c(\lambda)$
@@ -379,6 +380,7 @@ Representative sensor spectral sensitivities and illuminant spectral power distr
            & Peak 550~nm, $\sigma=50$~nm \\
     \bottomrule
   \end{tabular}
+  }
 \end{table}
 
 \begin{table}[H]
@@ -386,6 +388,7 @@ Representative sensor spectral sensitivities and illuminant spectral power distr
   \caption{Synthetic dataset dimensions by geometry.}
   \label{tab:dataset_dims}
   \small
+  \resizebox{\linewidth}{!}{
   \begin{tabular}{@{}lcccc@{}}
     \toprule
     Geometry & Load levels (data gen.\ only) & Spectral cond. & Image pairs & $N_\mathrm{max}$ (approx.) \\
@@ -400,6 +403,7 @@ Representative sensor spectral sensitivities and illuminant spectral power distr
     Total                 & 57 load levels & 10 & 570 & --- \\
     \bottomrule
   \end{tabular}
+  }
 \end{table}
 
 \begin{figure}[H]
@@ -430,6 +434,7 @@ The main point is that the same AffineTransform object (skimage.transform) uses 
   \caption{Augmentation parameter ranges. Identical transform applied to BMP and \texttt{.frn}.}
   \label{tab:augmentation}
   \small
+  \resizebox{\linewidth}{!}{
   \begin{tabular}{@{}llll@{}}
     \toprule
     Transform   & Parameter       & Range              & Notes \\
@@ -440,6 +445,7 @@ The main point is that the same AffineTransform object (skimage.transform) uses 
     Crop        & Ratio $c$        & $0.80\times$ scaled size & Fixed; random origin (uniform valid range) \\
     \bottomrule
   \end{tabular}
+  }
 \end{table}
 
 \FloatBarrier
@@ -463,6 +469,7 @@ Gabor filters \cite{daugman1985} help localize both spatial frequency and orient
   \caption{The 27-dimensional pixel-level feature descriptor.}
   \label{tab:features}
   \footnotesize
+  \resizebox{\linewidth}{!}{
   \begin{tabular}{@{}L{2.8cm}L{3.5cm}C{0.7cm}L{5.8cm}@{}}
     \toprule
     Group & Feature names & Dim. & Rationale \\
@@ -501,6 +508,7 @@ Gabor filters \cite{daugman1985} help localize both spatial frequency and orient
     Total & --- & 27 & --- \\
     \bottomrule
   \end{tabular}
+  }
 \end{table}
 
 \FloatBarrier
@@ -559,6 +567,7 @@ in Table~\ref{tab:hyperparams}, chosen via preliminary experiments on a
   \caption{XGBoost hyperparameters used identically for sin-model and cos-model.}
   \label{tab:hyperparams}
   \footnotesize
+  \resizebox{\linewidth}{!}{
   \begin{tabular}{@{}L{3.3cm}L{2.8cm}L{7.8cm}@{}}
     \toprule
     Hyperparameter & Value & Rationale \\
@@ -586,6 +595,7 @@ in Table~\ref{tab:hyperparams}, chosen via preliminary experiments on a
     \texttt{seed}               & 42 & Fixed for reproducibility \\
     \bottomrule
   \end{tabular}
+  }
 \end{table}
 
 \subsubsection{Chunked training and train/test split}
@@ -974,6 +984,7 @@ reported in this paper.
     These constants are used only during data generation.}
   \label{tab:constants}
   \small
+  \resizebox{\linewidth}{!}{
   \begin{tabular}{@{}L{5cm}ccc@{}}
     \toprule
     Parameter & Symbol & Value & Units \\
@@ -993,6 +1004,7 @@ reported in this paper.
       & $\lambda/(hC)$ & $\approx 2.015$ & MPa/fringe \\
     \bottomrule
   \end{tabular}
+  }
 \end{table}
 
 \end{document}
